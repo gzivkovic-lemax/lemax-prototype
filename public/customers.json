@@ -1,0 +1,68 @@
+[
+  {
+    "id": "cust-lemax",
+    "name": "Lemax",
+    "type": "Internal customer",
+    "email": "reservations@lemax.example",
+    "phone": "+385 1 555 0100",
+    "branchOffice": "Central office",
+    "accountManager": "Milena Kovac",
+    "market": "Preferred Market",
+    "notes": "Internal demonstration customer used in product walkthroughs."
+  },
+  {
+    "id": "cust-partner-1",
+    "name": "Partner 1",
+    "type": "Travel agent",
+    "email": "reservations@partner1.travel",
+    "phone": "+385 1 555 0101",
+    "branchOffice": "Central office",
+    "accountManager": "Milena Kovac",
+    "market": "Preferred Market",
+    "notes": "High-value partner focused on curated FIT tours."
+  },
+  {
+    "id": "cust-partner-2",
+    "name": "Partner 2",
+    "type": "Travel agent",
+    "email": "ops@partner2.travel",
+    "phone": "+44 20 5550 2000",
+    "branchOffice": "London office",
+    "accountManager": "Ivan Horvat",
+    "market": "HD Market",
+    "notes": "Frequently books seasonal departures and asks for quick option handling."
+  },
+  {
+    "id": "cust-johnson",
+    "name": "Johnson Roy",
+    "type": "Direct customer",
+    "email": "johnson.roy@example.com",
+    "phone": "+44 20 5550 2121",
+    "branchOffice": "London office",
+    "accountManager": "Ivan Horvat",
+    "market": "Preferred Market",
+    "notes": "Direct customer with repeated Croatia bookings."
+  },
+  {
+    "id": "cust-demo-agent",
+    "name": "Demo Agent",
+    "type": "Travel agent",
+    "email": "agent@demo.example",
+    "phone": "+385 1 555 0130",
+    "branchOffice": "Central office",
+    "accountManager": "Ana Petrovic",
+    "market": "Preferred Market",
+    "notes": "Generic demo agency used for training screens."
+  },
+  {
+    "id": "cust-audley",
+    "name": "Audley Travel",
+    "type": "Travel agent",
+    "email": "croatia@audley.example",
+    "phone": "+44 20 5550 3200",
+    "branchOffice": "London office",
+    "accountManager": "Luka Marin",
+    "market": "Preferred Market",
+    "notes": "Boutique tailor-made travel partner."
+  }
+]

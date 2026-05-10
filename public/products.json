@@ -1,0 +1,98 @@
+[
+  {
+    "id": "prod-air",
+    "name": "Air International",
+    "unitName": "Economy class",
+    "category": "Flight",
+    "region": "International",
+    "supplier": "Air International",
+    "preferredMarket": "Preferred Market",
+    "basePrice": 20,
+    "currency": "EUR",
+    "description": "Flight segment used in the original reservations grid sample."
+  },
+  {
+    "id": "prod-plitvice-final",
+    "name": "Plitvička jezera tour - Milenka exam FINAL",
+    "unitName": "Plitvice - 50 - final winter",
+    "category": "FIT tour",
+    "region": "Croatia",
+    "supplier": "Lemax DMC",
+    "preferredMarket": "Preferred Market",
+    "basePrice": 85000,
+    "currency": "EUR",
+    "description": "Final winter Plitvice itinerary shown in the original grid."
+  },
+  {
+    "id": "prod-plitvice-exam-2",
+    "name": "Plitvička jezera tour - Milenka exam 2",
+    "unitName": "Plitvice - 50 - final",
+    "category": "FIT tour",
+    "region": "Croatia",
+    "supplier": "Lemax DMC",
+    "preferredMarket": "Preferred Market",
+    "basePrice": 75000,
+    "currency": "EUR",
+    "description": "High-touch escorted Plitvice itinerary with premium ground handling."
+  },
+  {
+    "id": "prod-plitvice-winter",
+    "name": "Plitvička jezera tour - Milenka exam",
+    "unitName": "Plitvice - WINTER - 50",
+    "category": "FIT tour",
+    "region": "Croatia",
+    "supplier": "Lemax DMC",
+    "preferredMarket": "HD Market",
+    "basePrice": 32224,
+    "currency": "EUR",
+    "description": "Winter variant with flexible option windows and transport add-ons."
+  },
+  {
+    "id": "prod-croatia-trip",
+    "name": "Croatia trip 7 days - demo milenka",
+    "unitName": "podgrupa test milenka",
+    "category": "Package",
+    "region": "Croatia",
+    "supplier": "Blue Coast Collection",
+    "preferredMarket": "Preferred Market",
+    "basePrice": 2553,
+    "currency": "GBP",
+    "description": "Seven-day Croatia demo package."
+  },
+  {
+    "id": "prod-transfer",
+    "name": "Transfer Dalmatia",
+    "unitName": "Airport transfer",
+    "category": "Transfer",
+    "region": "Dalmatia",
+    "supplier": "Dalmatia Transfers",
+    "preferredMarket": "Preferred Market",
+    "basePrice": 5581.66,
+    "currency": "USD",
+    "description": "Airport transfer service."
+  },
+  {
+    "id": "prod-dalmatia-tour",
+    "name": "Best of Croatia | Dalmatia Tour (ST)*",
+    "unitName": "Excursion, Double Room - Standard",
+    "category": "Excursion",
+    "region": "Dalmatia",
+    "supplier": "Blue Coast Collection",
+    "preferredMarket": "Preferred Market",
+    "basePrice": 4301.78,
+    "currency": "GBP",
+    "description": "Dalmatia excursion package."
+  },
+  {
+    "id": "prod-private-excursion",
+    "name": "Test private excursion - Travel Link",
+    "unitName": "test",
+    "category": "Excursion",
+    "region": "Croatia",
+    "supplier": "Travel Link",
+    "preferredMarket": "Preferred Market",
+    "basePrice": 1980,
+    "currency": "GBP",
+    "description": "Private excursion sample product."
+  }
+]

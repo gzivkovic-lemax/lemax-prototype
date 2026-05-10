@@ -1,0 +1,273 @@
+.reservations-page {
+  display: grid;
+  gap: 16px;
+  padding: 16px 24px 32px;
+}
+
+/* ---------- Page header ---------- */
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 0;
+}
+
+.page-header__actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* ---------- Filter card ---------- */
+
+.filter-card {
+  padding: 16px;
+  display: grid;
+  gap: 12px;
+  align-content: start;
+  height: 144px;
+}
+
+.filter-card__main {
+  display: flex;
+  gap: 10px;
+  align-items: end;
+}
+
+.filter-card__main .lmx-field {
+  flex: 0 0 205px;
+  min-width: 0;
+}
+
+.filter-card__secondary {
+  display: grid;
+  grid-template-columns: minmax(120px, max-content) repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  align-items: end;
+}
+
+.lmx-field__date-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.lmx-field__date-pair .lmx-input {
+  min-width: 0;
+  width: 100%;
+}
+
+.lmx-field--checkbox {
+  display: grid;
+  gap: 4px;
+}
+
+.lmx-field--checkbox .lmx-checkbox {
+  height: 30px;
+  align-items: center;
+}
+
+.filter-card__submit {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: flex-end;
+  gap: 4px;
+  margin-left: auto;
+  min-width: 52px;
+}
+
+.filter-card__submit .lmx-btn {
+  min-width: 52px;
+  padding: 0 10px;
+}
+
+.filter-card__advanced {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  border: 0;
+  background: transparent;
+  color: var(--lemax-blue);
+  padding: 0;
+  cursor: pointer;
+  height: 30px;
+  font: inherit;
+  font-weight: 500;
+}
+
+.filter-card input[type='date']::-webkit-datetime-edit {
+  color: transparent;
+}
+
+.filter-card input[type='date']:focus::-webkit-datetime-edit {
+  color: var(--lemax-text);
+}
+
+.filter-card__advanced:hover {
+  color: var(--lemax-blue-dark);
+  text-decoration: underline;
+}
+
+.filter-card__advanced .material-icons {
+  font-size: 16px;
+}
+
+/* ---------- Grid ---------- */
+
+.grid-card {
+  padding: 0;
+  overflow: hidden;
+}
+
+.grid-scroll {
+  overflow-x: auto;
+}
+
+.grid {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: 12px;
+  line-height: 16px;
+  min-width: 1540px;
+}
+
+.grid thead th {
+  position: sticky;
+  top: 0;
+  background: var(--lemax-header-row);
+  color: var(--lemax-muted);
+  font-size: 11px;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0;
+  height: 40px;
+  padding: 6px 8px;
+  text-align: left;
+  border-bottom: 1px solid var(--lemax-border);
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.grid thead th button {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: 600;
+  text-transform: inherit;
+  letter-spacing: inherit;
+  cursor: pointer;
+  padding: 0;
+}
+
+.grid thead th button:hover {
+  color: var(--lemax-text);
+}
+
+.grid tbody td {
+  height: 45px;
+  padding: 6px 8px;
+  border-top: 1px solid var(--lemax-border-soft);
+  color: var(--lemax-text);
+  vertical-align: middle;
+}
+
+.grid tbody tr:hover td {
+  background: var(--lemax-row-hover);
+}
+
+.grid__link {
+  display: inline-block;
+  border: 0;
+  background: transparent;
+  color: var(--lemax-blue);
+  padding: 0;
+  font: inherit;
+  font-weight: 400;
+  cursor: pointer;
+  text-align: left;
+}
+
+.grid__link:hover {
+  color: var(--lemax-blue-dark);
+  text-decoration: underline;
+}
+
+.grid__subtext {
+  display: block;
+  margin-top: 2px;
+  color: var(--lemax-text);
+  font-size: 12px;
+}
+
+.grid__res-id {
+  display: inline-flex;
+}
+
+.align-right {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.grid__actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  justify-content: flex-end;
+}
+
+.grid tbody td:last-child {
+  text-align: left;
+}
+
+.grid__empty {
+  padding: 28px;
+  text-align: center;
+  color: var(--lemax-muted);
+}
+
+.grid__truncate-head {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.grid input[type='checkbox'] {
+  width: 14px;
+  height: 14px;
+  accent-color: var(--lemax-blue);
+}
+
+@media (max-width: 1280px) {
+  .filter-card__main {
+    flex-wrap: wrap;
+  }
+
+  .filter-card {
+    height: auto;
+  }
+
+  .filter-card__submit {
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: flex-start;
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 760px) {
+  .reservations-page {
+    padding: 12px;
+  }
+
+  .page-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .page-header__actions {
+    justify-content: flex-end;
+  }
+}

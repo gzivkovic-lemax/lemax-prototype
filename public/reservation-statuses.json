@@ -1,0 +1,8 @@
+[
+  { "id": "inquiry", "key": "inquiry", "label": "Inquiry", "tone": "inquiry" },
+  { "id": "option", "key": "option", "label": "Option", "tone": "option" },
+  { "id": "confirmed", "key": "confirmed", "label": "Confirmed", "tone": "confirmed" },
+  { "id": "finished", "key": "finished", "label": "Finished", "tone": "finished" },
+  { "id": "cancelled", "key": "cancelled", "label": "Cancelled", "tone": "cancelled" },
+  { "id": "unrealized", "key": "unrealized", "label": "Unrealized", "tone": "unrealized" }
+]

@@ -1,0 +1,126 @@
+.shell {
+  position: relative;
+  min-height: 100vh;
+  background: var(--lemax-bg);
+}
+
+.shell__topbar {
+  display: flex;
+  align-items: center;
+  height: 56px;
+  background: var(--lemax-blue);
+  color: #fff;
+  padding-left: 0;
+}
+
+.shell__logo {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 56px;
+  background: var(--lemax-blue);
+  flex-shrink: 0;
+}
+
+.shell__nav {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+  height: 56px;
+  padding-left: 0;
+  overflow-x: auto;
+}
+
+.shell__nav a {
+  display: inline-flex;
+  align-items: center;
+  height: 30px;
+  padding: 0 12px;
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+  border-radius: var(--radius-sm);
+}
+
+.shell__nav a:hover {
+  color: #fff;
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.shell__nav a.active {
+  color: #fff;
+  background: rgba(0, 0, 0, 0.12);
+}
+
+.shell__topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 24px 0 8px;
+  flex-shrink: 0;
+}
+
+.shell__search {
+  display: flex;
+  align-items: center;
+  height: 32px;
+  background: rgba(0, 0, 0, 0.18);
+  border-radius: var(--radius-sm);
+  padding: 0 10px;
+  width: 190px;
+}
+
+.shell__search input {
+  flex: 1;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: #fff;
+  font-size: 12px;
+  height: 100%;
+}
+
+.shell__search input::placeholder {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.shell__user {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+}
+
+.shell__user:hover {
+  background: rgba(255, 255, 255, 0.28);
+}
+
+.shell__user .material-icons {
+  font-size: 22px;
+}
+
+.shell__content {
+  position: relative;
+  z-index: 1;
+  padding: 0;
+}
+
+@media (max-width: 1100px) {
+  .shell__search {
+    width: 160px;
+  }
+}
+
+@media (max-width: 760px) {
+  .shell__search {
+    display: none;
+  }
+}

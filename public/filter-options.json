@@ -1,0 +1,19 @@
+{
+  "branchOffices": [
+    "Central office",
+    "London office",
+    "New York office",
+    "Singapore office"
+  ],
+  "createdBy": [
+    "Milena Kovac",
+    "Ivan Horvat",
+    "Ana Petrovic",
+    "Luka Marin"
+  ],
+  "markets": [
+    "Preferred Market",
+    "HD Market",
+    "Not Preferred market"
+  ]
+}
