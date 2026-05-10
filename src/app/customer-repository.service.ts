@@ -13,4 +13,8 @@ export class CustomerRepository {
   getById(customerId: string): Customer | undefined {
     return this.customers().find((customer) => customer.id === customerId);
   }
+
+  refresh(): void {
+    this.customers.set(this.storage.get<Customer[]>(STORAGE_KEYS.customers, []));
+  }
 }

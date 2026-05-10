@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { AppDataResetService } from './app-data-reset.service';
 import { WindowLayerComponent } from './window-layer.component';
 
 @Component({
@@ -34,6 +35,15 @@ import { WindowLayerComponent } from './window-layer.component';
           <a routerLink="/partners" routerLinkActive="active">Partners</a>
           <a routerLink="/reports" routerLinkActive="active">Reports</a>
           <a routerLink="/options" routerLinkActive="active">Options</a>
+          <button
+            type="button"
+            class="shell__reset"
+            title="Reset all prototype data back to defaults"
+            (click)="resetAllData()"
+          >
+            <span class="material-icons">refresh</span>
+            Reset all data
+          </button>
         </nav>
 
         <div class="shell__topbar-right">
@@ -55,4 +65,14 @@ import { WindowLayerComponent } from './window-layer.component';
   `,
   styleUrl: './lemax-shell.component.css'
 })
-export class LemaxShellComponent {}
+export class LemaxShellComponent {
+  private readonly resetService = inject(AppDataResetService);
+
+  protected async resetAllData(): Promise<void> {
+    const ok = window.confirm(
+      'Reset all prototype data?\n\nThis clears every change you have made in this browser (reservations, customers, products, page edits, open windows) and reloads the original seed data.'
+    );
+    if (!ok) return;
+    await this.resetService.resetAll();
+  }
+}

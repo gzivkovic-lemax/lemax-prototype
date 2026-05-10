@@ -11,6 +11,10 @@ export class FilterOptionsRepository {
   });
 
   constructor(private readonly storage: StorageService) {
+    this.refresh();
+  }
+
+  refresh(): void {
     this.filterOptions.set(
       this.storage.get<FilterOptions>(STORAGE_KEYS.filterOptions, {
         branchOffices: [],

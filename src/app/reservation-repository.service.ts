@@ -22,6 +22,31 @@ export class ReservationRepository {
     this.persist(nextReservations);
   }
 
+  duplicate(reservationId: string): Reservation | undefined {
+    const original = this.getById(reservationId);
+    if (!original) return undefined;
+
+    const nextNumber =
+      this.reservations().reduce(
+        (max, reservation) => Math.max(max, reservation.reservationNumber),
+        0
+      ) + 1;
+
+    const copy: Reservation = {
+      ...original,
+      id: `${original.id}-copy-${Date.now()}`,
+      reservationNumber: nextNumber,
+      paid: 0
+    };
+
+    this.persist([copy, ...this.reservations()]);
+    return copy;
+  }
+
+  refresh(): void {
+    this.reservations.set(this.storage.get<Reservation[]>(STORAGE_KEYS.reservations, []));
+  }
+
   private persist(reservations: Reservation[]): void {
     this.reservations.set(reservations);
     this.storage.set(STORAGE_KEYS.reservations, reservations);

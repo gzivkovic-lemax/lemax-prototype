@@ -1,19 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
-
-interface CustomerRow {
-  code: string;
-  name: string;
-  country: string;
-  city: string;
-  address: string;
-  zipCode: string;
-  telephone: string;
-  type: string;
-  email: string;
-  mobilePhone: string;
-  taxType: string;
-}
+import { Component, inject } from '@angular/core';
+import { PrototypeDataRepository } from './prototype-data-repository.service';
 
 @Component({
   selector: 'app-customers-page',
@@ -111,7 +98,7 @@ interface CustomerRow {
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let row of customers">
+              <tr *ngFor="let row of customers()">
                 <td><input type="checkbox" [attr.aria-label]="'Select ' + row.name" /></td>
                 <td>{{ row.code }}</td>
                 <td>{{ row.name }}</td>
@@ -141,23 +128,6 @@ interface CustomerRow {
   `
 })
 export class CustomersPageComponent {
-  protected readonly customers: CustomerRow[] = [
-    { code: '255', name: 'A Customer', country: 'CROATIA', city: '', address: '', zipCode: '', telephone: '', type: 'Customer', email: 'customer@customer.com', mobilePhone: '', taxType: 'Not tax payer' },
-    { code: '241', name: 'Abbot Haydn', country: 'CROATIA', city: '', address: '', zipCode: '', telephone: '', type: 'Customer', email: 'haydn.abbott@outlook.com', mobilePhone: '', taxType: 'Tax payer' },
-    { code: '247', name: 'Airedale International', country: 'CROATIA', city: 'Leeds', address: 'Leeds Road Rawdon', zipCode: 'LS19 6JY', telephone: '', type: 'Customer', email: '', mobilePhone: '', taxType: 'Tax payer' },
-    { code: '111', name: 'Albert Agency', country: 'ICELAND', city: '', address: '', zipCode: '', telephone: '', type: 'Customer', email: 'albert@gjtravel.is', mobilePhone: '', taxType: 'Tax payer' },
-    { code: '170', name: 'Alex Agency', country: 'RUSSIA', city: '', address: '', zipCode: '', telephone: '', type: 'Customer', email: 'alexp@russobalt.tours', mobilePhone: '', taxType: 'Tax payer' },
-    { code: '75', name: 'Aloschi Cruise Line', country: 'ITALY', city: '', address: '', zipCode: '', telephone: '', type: 'Customer', email: 'adolfo@aloschibros.com', mobilePhone: '', taxType: 'Tax payer' },
-    { code: '308', name: 'asd asdasd', country: 'CROATIA', city: '', address: '', zipCode: '', telephone: '', type: 'Customer', email: 'dd@leo.com', mobilePhone: '', taxType: 'Not tax payer' },
-    { code: '623', name: 'Audley Travel', country: 'UNITED KINGDOM', city: 'London', address: 'This Road 123', zipCode: '', telephone: '+87844784784', type: 'Customer/Travel agent', email: 'audley@mailinator.com', mobilePhone: '', taxType: 'Tax payer' },
-    { code: '73', name: 'b a', country: 'CROATIA', city: '', address: '', zipCode: '', telephone: '', type: 'Customer', email: '', mobilePhone: '', taxType: 'Not tax payer' },
-    { code: '302', name: 'B B', country: 'CROATIA', city: '', address: '', zipCode: '', telephone: '', type: 'Customer', email: 'v@v.com', mobilePhone: '', taxType: 'Not tax payer' },
-    { code: '221', name: 'b b', country: 'CROATIA', city: '', address: '', zipCode: '', telephone: '', type: 'Customer', email: 'ivanmlinarić92@gmail.com', mobilePhone: '', taxType: 'Not tax payer' },
-    { code: '199', name: 'Baltic Travel Group', country: 'LATVIA', city: 'Riga', address: 'Riga Office - 31, Elizabets Street', zipCode: 'LV-1010', telephone: '', type: 'Customer', email: 'bernarda.vrbat@lemax.net', mobilePhone: '', taxType: 'Tax payer' },
-    { code: '311', name: 'Banic Marija', country: 'CROATIA', city: '', address: '', zipCode: '', telephone: '', type: 'Customer', email: '', mobilePhone: '', taxType: 'Tax payer' },
-    { code: '624', name: 'Barrett Adam', country: 'UNITED KINGDOM', city: 'Chesterfield', address: '43 Whinfell Road', zipCode: '', telephone: '', type: 'Customer', email: '', mobilePhone: '', taxType: 'Tax payer' },
-    { code: '201', name: 'Baudrexl Andreas', country: 'CROATIA', city: '', address: '', zipCode: '', telephone: '', type: 'Customer', email: 'andreasb@designreisen.de', mobilePhone: '', taxType: 'Tax payer' },
-    { code: '307', name: 'bb AA', country: 'CROATIA', city: '', address: '', zipCode: '', telephone: '', type: 'Customer', email: 'ret@com.vo', mobilePhone: '', taxType: 'Not tax payer' },
-    { code: '222', name: 'bb bb', country: 'CROATIA', city: '', address: '', zipCode: '', telephone: '', type: 'Customer', email: 'bb@bb.bb', mobilePhone: '', taxType: 'Not tax payer' }
-  ];
+  private readonly repository = inject(PrototypeDataRepository);
+  protected readonly customers = this.repository.customers;
 }

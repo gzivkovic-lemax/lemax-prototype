@@ -1,19 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
-
-interface OperationRow {
-  opsNo: string;
-  itemId: string;
-  product: string;
-  unit: string;
-  destination: string;
-  startDate: string;
-  endDate: string;
-  leadPassenger: string;
-  pax: string;
-  net: string;
-  supplier: string;
-}
+import { Component, inject } from '@angular/core';
+import { PrototypeDataRepository } from './prototype-data-repository.service';
 
 @Component({
   selector: 'app-operations-report-page',
@@ -157,7 +144,7 @@ interface OperationRow {
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let row of operations">
+              <tr *ngFor="let row of operations()">
                 <td><input type="checkbox" [attr.aria-label]="'Select operation ' + row.opsNo" /></td>
                 <td><span class="ops-badge">{{ row.opsNo }}</span></td>
                 <td><button type="button" class="lmx-grid-link">{{ row.itemId }}</button></td>
@@ -187,47 +174,6 @@ interface OperationRow {
   `
 })
 export class OperationsReportPageComponent {
-  private readonly hotelRows = Array.from({ length: 10 }, (_, index): OperationRow => ({
-    opsNo: '10141',
-    itemId: (536234 - index).toString(),
-    product: 'Radisson Blu Resort',
-    unit: 'Double room, Deluxe room Street view',
-    destination: 'Split',
-    startDate: '10/05/2026',
-    endDate: '12/05/2026',
-    leadPassenger: 'Name No',
-    pax: '1',
-    net: '694.29 EUR',
-    supplier: 'Rezidor Hotel Group'
-  }));
-
-  protected readonly operations: OperationRow[] = [
-    {
-      opsNo: '10390',
-      itemId: '537048',
-      product: 'Generic transfer',
-      unit: 'Daily rate (Worldwide)',
-      destination: 'Worldwide - Worldwide',
-      startDate: '10/05/2026',
-      endDate: '10/05/2026',
-      leadPassenger: 'Name No',
-      pax: '1',
-      net: '530.00 EUR',
-      supplier: 'Transfers Ltd.'
-    },
-    ...this.hotelRows,
-    {
-      opsNo: '10391',
-      itemId: '537049',
-      product: 'Generic transfer',
-      unit: 'Daily rate (Worldwide)',
-      destination: 'Worldwide - Worldwide',
-      startDate: '11/05/2026',
-      endDate: '11/05/2026',
-      leadPassenger: 'Name No',
-      pax: '1',
-      net: '530.00 EUR',
-      supplier: 'Transfers Ltd.'
-    }
-  ];
+  private readonly repository = inject(PrototypeDataRepository);
+  protected readonly operations = this.repository.operations;
 }

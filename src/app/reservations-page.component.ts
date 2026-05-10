@@ -166,12 +166,19 @@ import { WindowManagerService } from './window-manager.service';
               <tr *ngFor="let row of filteredRows()" (dblclick)="openReservation(row.id)">
                 <td><input type="checkbox" [attr.aria-label]="'Select ' + row.reservationNumber" /></td>
                 <td>
-                  <app-status-badge
-                    class="grid__res-id"
-                    [label]="row.reservationNumber.toString()"
-                    [tone]="row.statusTone"
-                    [icon]="badgeIcon(row.statusTone)"
-                  />
+                  <button
+                    type="button"
+                    class="grid__res-button"
+                    (click)="openReservation(row.id)"
+                    [attr.aria-label]="'Open reservation ' + row.reservationNumber"
+                  >
+                    <app-status-badge
+                      class="grid__res-id"
+                      [label]="row.reservationNumber.toString()"
+                      [tone]="row.statusTone"
+                      [icon]="badgeIcon(row.statusTone)"
+                    />
+                  </button>
                 </td>
                 <td>
                   <button type="button" class="grid__link" (click)="openProduct(row.productId)">
@@ -200,7 +207,7 @@ import { WindowManagerService } from './window-manager.service';
                     <button type="button" class="lmx-icon-btn" aria-label="Delete">
                       <span class="material-icons">delete</span>
                     </button>
-                    <button type="button" class="lmx-icon-btn" aria-label="Copy">
+                    <button type="button" class="lmx-icon-btn" (click)="copyReservation(row.id)" aria-label="Copy">
                       <span class="material-icons">content_copy</span>
                     </button>
                     <button type="button" class="lmx-icon-btn" aria-label="More">
@@ -325,6 +332,13 @@ export class ReservationsPageComponent {
       column,
       direction: current.column === column && current.direction === 'asc' ? 'desc' : 'asc'
     }));
+  }
+
+  protected copyReservation(reservationId: string): void {
+    const copy = this.reservationRepository.duplicate(reservationId);
+    if (copy) {
+      this.windowManager.open('reservation', copy.id, `Reservation details (${copy.reservationNumber})`, 'edit');
+    }
   }
 
   protected openReservation(reservationId: string): void {

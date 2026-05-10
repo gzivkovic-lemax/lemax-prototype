@@ -13,4 +13,8 @@ export class ProductRepository {
   getById(productId: string): Product | undefined {
     return this.products().find((product) => product.id === productId);
   }
+
+  refresh(): void {
+    this.products.set(this.storage.get<Product[]>(STORAGE_KEYS.products, []));
+  }
 }

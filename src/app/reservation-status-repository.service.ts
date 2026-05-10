@@ -13,4 +13,8 @@ export class ReservationStatusRepository {
   getById(statusId: string): ReservationStatus | undefined {
     return this.statuses().find((status) => status.id === statusId);
   }
+
+  refresh(): void {
+    this.statuses.set(this.storage.get<ReservationStatus[]>(STORAGE_KEYS.statuses, []));
+  }
 }

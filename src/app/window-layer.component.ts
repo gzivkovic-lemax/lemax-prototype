@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, HostListener, computed, inject } from '@angular/core';
 import { CustomerDetailWindowComponent } from './customer-detail-window.component';
 import { ProductDetailWindowComponent } from './product-detail-window.component';
 import { ReservationEditorWindowComponent } from './reservation-editor-window.component';
@@ -16,28 +16,39 @@ import { FloatingWindowComponent } from './floating-window.component';
     CustomerDetailWindowComponent
   ],
   template: `
-    <div class="window-layer" *ngIf="windowManager.windows().length">
-      <app-floating-window
-        *ngFor="let windowState of windowManager.windows(); trackBy: trackByWindowId"
-        [window]="windowState"
-        (close)="windowManager.close($event)"
-        (focus)="windowManager.focus($event)"
-        (move)="windowManager.move($event.windowId, $event.x, $event.y)"
-      >
-        <app-reservation-editor-window
-          *ngIf="windowState.kind === 'reservation'"
-          [reservationId]="windowState.entityId"
-          [windowId]="windowState.windowId"
-        />
+    <ng-container *ngIf="hasWindows()">
+      <div class="window-backdrop" (click)="closeTopmost()"></div>
+      <div class="window-layer">
+        <app-floating-window
+          *ngFor="let windowState of windowManager.windows(); trackBy: trackByWindowId"
+          [window]="windowState"
+          (close)="windowManager.close($event)"
+          (focus)="windowManager.focus($event)"
+          (move)="windowManager.move($event.windowId, $event.x, $event.y)"
+        >
+          <app-reservation-editor-window
+            *ngIf="windowState.kind === 'reservation'"
+            [reservationId]="windowState.entityId"
+            [windowId]="windowState.windowId"
+          />
 
-        <app-product-detail-window *ngIf="windowState.kind === 'product'" [productId]="windowState.entityId" />
+          <app-product-detail-window *ngIf="windowState.kind === 'product'" [productId]="windowState.entityId" />
 
-        <app-customer-detail-window *ngIf="windowState.kind === 'customer'" [customerId]="windowState.entityId" />
-      </app-floating-window>
-    </div>
+          <app-customer-detail-window *ngIf="windowState.kind === 'customer'" [customerId]="windowState.entityId" />
+        </app-floating-window>
+      </div>
+    </ng-container>
   `,
   styles: [
     `
+      .window-backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 14;
+        background: rgba(10, 43, 69, 0.32);
+        backdrop-filter: blur(1px);
+      }
+
       .window-layer {
         position: fixed;
         inset: 0;
@@ -54,5 +65,19 @@ import { FloatingWindowComponent } from './floating-window.component';
 export class WindowLayerComponent {
   protected readonly windowManager = inject(WindowManagerService);
 
+  protected readonly hasWindows = computed(() => this.windowManager.windows().length > 0);
+
   protected trackByWindowId = (_index: number, item: { windowId: string }) => item.windowId;
+
+  protected closeTopmost(): void {
+    const top = [...this.windowManager.windows()].sort((a, b) => b.zIndex - a.zIndex)[0];
+    if (top) {
+      this.windowManager.close(top.windowId);
+    }
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscape(): void {
+    this.closeTopmost();
+  }
 }

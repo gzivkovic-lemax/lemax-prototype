@@ -98,39 +98,84 @@ type Tab =
 
             <article class="lmx-card editor__card">
               <h3 class="editor__card-title">Documents</h3>
-              <ul class="editor__doc-list editor__doc-list--two-col">
-                <li><span>Offer</span><a>Create</a><a>List</a></li>
-                <li><span>Pro forma invoice</span><a>Create</a></li>
-                <li><span>Supplier inquiry</span><a>Create</a></li>
-                <li><span>Supplier confirmations</span><a>Create</a><a>List</a></li>
-                <li><span>Invoice</span><a>Create</a><a>List</a></li>
-                <li><span>Supplier Invoice</span><a>New</a></li>
-              </ul>
+              <div class="editor__docs">
+                <span class="editor__docs-label">Offer</span>
+                <a class="editor__docs-link">Create</a>
+                <a class="editor__docs-link">List</a>
+                <span class="material-icons editor__doc-icon">mail</span>
+                <span class="material-icons editor__doc-icon">picture_as_pdf</span>
+                <span></span>
+
+                <span class="editor__docs-label">Pro forma invoice</span>
+                <a class="editor__docs-link">Create</a>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+
+                <span class="editor__docs-label">Supplier inquiry</span>
+                <a class="editor__docs-link">Create</a>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+
+                <span class="editor__docs-label">Supplier confirmations</span>
+                <a class="editor__docs-link">Create</a>
+                <a class="editor__docs-link">List</a>
+                <span class="material-icons editor__doc-icon">mail</span>
+                <span class="material-icons editor__doc-icon">picture_as_pdf</span>
+                <span></span>
+
+                <span class="editor__docs-label">Invoice</span>
+                <a class="editor__docs-link">Create</a>
+                <a class="editor__docs-link">List</a>
+                <span class="material-icons editor__doc-icon">mail</span>
+                <span class="material-icons editor__doc-icon">picture_as_pdf</span>
+                <span class="material-icons editor__doc-icon">add</span>
+
+                <span class="editor__docs-label">Supplier Invoice</span>
+                <a class="editor__docs-link">New</a>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+
+                <span class="editor__docs-label">Vouchers</span>
+                <a class="editor__docs-link">Create</a>
+                <a class="editor__docs-link">List</a>
+                <span class="material-icons editor__doc-icon">mail</span>
+                <span class="material-icons editor__doc-icon">picture_as_pdf</span>
+                <span></span>
+              </div>
             </article>
 
             <article class="lmx-card editor__card editor__status-card">
               <h3 class="editor__card-title">Status</h3>
               <div class="editor__status-row">
-                <span>Current status:</span>
-                <select class="lmx-select editor__status-select" formControlName="statusId">
-                  <option *ngFor="let status of statuses()" [ngValue]="status.id">{{ status.label }}</option>
-                </select>
+                <span class="editor__status-label">Current status:</span>
+                <span
+                  class="editor__status-pill"
+                  [ngClass]="currentStatusTone()"
+                >{{ currentStatusLabel() }}</span>
               </div>
-              <div class="editor__status-actions">
-                <button type="button" class="lmx-btn lmx-btn--ghost">Finish</button>
-                <button type="button" class="lmx-btn lmx-btn--ghost">Cancel</button>
+              <div class="editor__status-links">
+                <a class="editor__status-link"><span class="material-icons">check_circle</span>Finish</a>
+                <a class="editor__status-link"><span class="material-icons">cancel</span>Cancel</a>
               </div>
 
               <h3 class="editor__card-title editor__card-title--spaced">Transactions</h3>
-              <div class="editor__totals">
-                <div>
-                  <span>Paid</span>
-                  <strong>{{ form.controls.paid.value | currency: currency() : 'symbol-narrow' : '1.2-2' }}</strong>
-                </div>
-                <div>
-                  <span>Remaining</span>
-                  <strong>{{ remainingAmount() | currency: currency() : 'symbol-narrow' : '1.2-2' }}</strong>
-                </div>
+              <div class="editor__transactions">
+                <a class="editor__status-link editor__status-link--blue">
+                  <span class="material-icons editor__money-icon">attach_money</span>Transactions
+                </a>
+                <a class="editor__status-link editor__status-link--blue">
+                  <span class="material-icons">add</span>New payment
+                </a>
+              </div>
+              <div class="editor__paid-row">
+                <div>Paid <strong>{{ form.controls.paid.value | number: '1.2-2' }}</strong></div>
+                <div>Remain. <strong>{{ remainingAmount() | number: '1.2-2' }}</strong></div>
               </div>
             </article>
           </div>
@@ -340,19 +385,21 @@ type Tab =
         flex: 1;
         min-height: 0;
         overflow: auto;
-        padding: 16px;
+        padding: 12px 16px;
         display: grid;
-        gap: 12px;
+        gap: 10px;
+        align-content: start;
       }
 
       .editor__top-cards {
         display: grid;
-        grid-template-columns: 1.4fr 1fr 1.2fr 1fr;
-        gap: 12px;
+        grid-template-columns: 1.4fr 0.9fr 1.2fr 0.9fr;
+        gap: 10px;
+        align-items: start;
       }
 
       .editor__card {
-        padding: 14px 16px;
+        padding: 12px 16px;
       }
 
       .editor__card-title {
@@ -363,7 +410,7 @@ type Tab =
       }
 
       .editor__card-title--spaced {
-        margin-top: 16px;
+        margin-top: 12px;
       }
 
       .editor__form-grid {
@@ -378,44 +425,148 @@ type Tab =
         padding: 0;
         display: grid;
         gap: 6px;
+        font-size: 12px;
       }
 
       .editor__doc-list li {
         display: flex;
         align-items: center;
-        gap: 10px;
+      }
+
+      .editor__doc-list li > a {
+        color: var(--lemax-blue);
+      }
+
+      .editor__docs {
+        display: grid;
+        grid-template-columns: 1fr auto auto 18px 18px 18px;
+        column-gap: 10px;
+        row-gap: 6px;
         font-size: 12px;
+        align-items: center;
       }
 
-      .editor__doc-list li > span {
+      .editor__docs-label {
         color: var(--lemax-text);
-        min-width: 140px;
       }
 
-      .editor__doc-list--two-col li > span {
-        flex: 1;
+      .editor__docs-link {
+        color: var(--lemax-blue);
+        cursor: pointer;
+        white-space: nowrap;
+      }
+
+      .editor__docs-link:hover {
+        text-decoration: underline;
+      }
+
+      .editor__doc-icon.material-icons {
+        color: var(--lemax-muted);
+        font-size: 16px;
       }
 
       .editor__status-card {
         display: flex;
         flex-direction: column;
+        gap: 4px;
+      }
+
+      .editor__status-card .editor__card-title {
+        margin-bottom: 6px;
       }
 
       .editor__status-row {
         display: flex;
         align-items: center;
         gap: 8px;
-        margin-bottom: 8px;
+        margin-bottom: 4px;
         font-size: 12px;
       }
 
-      .editor__status-select {
-        min-width: 140px;
+      .editor__status-label {
+        color: var(--lemax-text);
       }
 
-      .editor__status-actions {
+      .editor__status-pill {
+        display: inline-flex;
+        align-items: center;
+        padding: 3px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+      .editor__status-pill.confirmed {
+        background: var(--status-confirmed-bg);
+        color: var(--status-confirmed-fg);
+      }
+      .editor__status-pill.option {
+        background: var(--status-option-bg);
+        color: var(--status-option-fg);
+      }
+      .editor__status-pill.inquiry {
+        background: var(--status-inquiry-bg);
+        color: var(--status-inquiry-fg);
+      }
+      .editor__status-pill.finished {
+        background: var(--status-finished-bg);
+        color: var(--status-finished-fg);
+      }
+      .editor__status-pill.cancelled,
+      .editor__status-pill.unrealized {
+        background: var(--status-cancelled-bg);
+        color: var(--status-cancelled-fg);
+      }
+
+      .editor__status-links {
         display: flex;
-        gap: 6px;
+        gap: 14px;
+        align-items: center;
+      }
+
+      .editor__status-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 12px;
+        cursor: pointer;
+        color: var(--lemax-action);
+      }
+
+      .editor__status-link:hover {
+        text-decoration: underline;
+      }
+
+      .editor__status-link .material-icons {
+        font-size: 16px;
+      }
+
+      .editor__status-link--blue {
+        color: var(--lemax-blue);
+      }
+
+      .editor__transactions {
+        display: flex;
+        gap: 14px;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+
+      .editor__money-icon.material-icons {
+        font-size: 18px;
+        color: var(--lemax-blue);
+      }
+
+      .editor__paid-row {
+        display: flex;
+        gap: 16px;
+        font-size: 12px;
+        color: var(--lemax-text);
+      }
+
+      .editor__paid-row strong {
+        margin-left: 4px;
+        font-weight: 600;
       }
 
       .editor__totals {
@@ -641,6 +792,16 @@ export class ReservationEditorWindowComponent implements OnChanges {
 
   protected readonly currency = computed(() => this.currentReservation()?.currency ?? 'EUR');
 
+  protected readonly currentStatusTone = computed(() => {
+    const id = this.form.controls.statusId.value || this.currentReservation()?.statusId;
+    return this.statuses().find((status) => status.id === id)?.tone ?? 'inquiry';
+  });
+
+  protected readonly currentStatusLabel = computed(() => {
+    const id = this.form.controls.statusId.value || this.currentReservation()?.statusId;
+    return this.statuses().find((status) => status.id === id)?.label ?? '';
+  });
+
   protected readonly itemPassengers = computed(() => {
     const reservation = this.currentReservation();
     if (!reservation) return [] as string[];
@@ -735,14 +896,7 @@ export class ReservationEditorWindowComponent implements OnChanges {
     };
 
     this.reservationRepository.save(updatedReservation);
-    this.currentReservation.set(updatedReservation);
-    this.savedMessage.set(
-      `Saved at ${new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit' }).format(new Date())}`
-    );
-    this.windowManager.updateTitle(
-      this.windowId,
-      `Reservation details (${updatedReservation.reservationNumber})`
-    );
+    this.windowManager.close(this.windowId);
   }
 
   private loadReservation(): void {
