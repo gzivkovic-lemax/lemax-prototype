@@ -335,6 +335,11 @@ textarea.lmx-input {
   min-width: 0;
 }
 
+.lmx-filter-card .lmx-field > span {
+  display: block;
+  min-height: 32px;
+}
+
 .lmx-filter-card .lmx-input,
 .lmx-filter-card .lmx-select {
   width: 100%;
