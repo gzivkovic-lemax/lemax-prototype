@@ -13,6 +13,38 @@ export interface PrototypeCustomer {
   email: string;
   mobilePhone: string;
   taxType: string;
+  companyOrPerson?: 'company' | 'person';
+  title?: string;
+  surname?: string;
+  middleName?: string;
+  oib?: string;
+  vatId?: string;
+  birthDate?: string;
+  birthplace?: string;
+  passportNumber?: string;
+  passportIssueDate?: string;
+  passportExpiryDate?: string;
+  passportIssuingCountry?: string;
+  citizenship?: string;
+  sex?: 'Male' | 'Female' | '';
+  language?: string;
+  currency?: string;
+  isCustomer?: boolean;
+  isSupplier?: boolean;
+  isTravelAgent?: boolean;
+  addressLine2?: string;
+  stateProvince?: string;
+  telephone2?: string;
+  telefax?: string;
+  bankName?: string;
+  swift?: string;
+  bankAccountNumber?: string;
+  contractNumber?: string;
+  accountingCode?: string;
+  secAccountingCode?: string;
+  dueDateDays?: string;
+  supplierInvoiceCode?: string;
+  defaultOptionPeriodDays?: string;
 }
 
 export interface PrototypeOffer {
@@ -61,7 +93,7 @@ export interface PrototypeData {
 
 const STORAGE_KEY = 'lemax-prototype.prototype-pages';
 const SEED_VERSION_KEY = 'lemax-prototype.prototype-pages.seed-version';
-const SEED_VERSION = 'v1';
+const SEED_VERSION = 'v3';
 
 const SEED: PrototypeData = {
   customers: [
@@ -196,6 +228,35 @@ export class PrototypeDataRepository {
     this.storage.set(STORAGE_KEY, SEED);
     this.storage.set(SEED_VERSION_KEY, SEED_VERSION);
     this.state.set(SEED);
+  }
+
+  getCustomerByCode(code: string): PrototypeCustomer | undefined {
+    return this.state().customers.find((customer) => customer.code === code);
+  }
+
+  saveCustomer(updated: PrototypeCustomer): void {
+    const current = this.state();
+    const customers = current.customers.map((customer) =>
+      customer.code === updated.code ? updated : customer
+    );
+    const next: PrototypeData = { ...current, customers };
+    this.state.set(next);
+    this.storage.set(STORAGE_KEY, next);
+  }
+
+  createCustomer(customer: PrototypeCustomer): void {
+    const current = this.state();
+    const next: PrototypeData = { ...current, customers: [customer, ...current.customers] };
+    this.state.set(next);
+    this.storage.set(STORAGE_KEY, next);
+  }
+
+  generateCustomerCode(): string {
+    const maxCode = this.state().customers.reduce((max, customer) => {
+      const parsed = Number.parseInt(customer.code, 10);
+      return Number.isFinite(parsed) ? Math.max(max, parsed) : max;
+    }, 0);
+    return String(maxCode + 1);
   }
 
   static get storageKeys(): readonly string[] {

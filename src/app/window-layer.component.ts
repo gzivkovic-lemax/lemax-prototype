@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, HostListener, computed, inject } from '@angular/core';
 import { CustomerDetailWindowComponent } from './customer-detail-window.component';
+import { CustomerEditorWindowComponent } from './customer-editor-window.component';
 import { ProductDetailWindowComponent } from './product-detail-window.component';
 import { ReservationEditorWindowComponent } from './reservation-editor-window.component';
 import { WindowManagerService } from './window-manager.service';
@@ -13,7 +14,8 @@ import { FloatingWindowComponent } from './floating-window.component';
     FloatingWindowComponent,
     ReservationEditorWindowComponent,
     ProductDetailWindowComponent,
-    CustomerDetailWindowComponent
+    CustomerDetailWindowComponent,
+    CustomerEditorWindowComponent
   ],
   template: `
     <ng-container *ngIf="hasWindows()">
@@ -35,6 +37,12 @@ import { FloatingWindowComponent } from './floating-window.component';
           <app-product-detail-window *ngIf="windowState.kind === 'product'" [productId]="windowState.entityId" />
 
           <app-customer-detail-window *ngIf="windowState.kind === 'customer'" [customerId]="windowState.entityId" />
+
+          <app-customer-editor-window
+            *ngIf="windowState.kind === 'prototype-customer'"
+            [customerCode]="windowState.entityId"
+            [windowId]="windowState.windowId"
+          />
         </app-floating-window>
       </div>
     </ng-container>

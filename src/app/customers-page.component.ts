@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import { PrototypeDataRepository } from './prototype-data-repository.service';
+import { PrototypeCustomer, PrototypeDataRepository } from './prototype-data-repository.service';
+import { WindowManagerService } from './window-manager.service';
 
 @Component({
   selector: 'app-customers-page',
@@ -10,7 +11,7 @@ import { PrototypeDataRepository } from './prototype-data-repository.service';
       <header class="lmx-list-page__header">
         <h1 class="lmx-page-title">Customers</h1>
         <div class="lmx-list-page__actions">
-          <button type="button" class="lmx-btn lmx-btn--action">
+          <button type="button" class="lmx-btn lmx-btn--action" (click)="openNew()">
             <span class="material-icons">add</span>
             New customer
           </button>
@@ -98,8 +99,12 @@ import { PrototypeDataRepository } from './prototype-data-repository.service';
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let row of customers()">
-                <td><input type="checkbox" [attr.aria-label]="'Select ' + row.name" /></td>
+              <tr
+                *ngFor="let row of customers()"
+                class="customers-grid__row"
+                (dblclick)="openEditor(row)"
+              >
+                <td><input type="checkbox" [attr.aria-label]="'Select ' + row.name" (click)="$event.stopPropagation()" /></td>
                 <td>{{ row.code }}</td>
                 <td>{{ row.name }}</td>
                 <td>{{ row.country }}</td>
@@ -113,7 +118,14 @@ import { PrototypeDataRepository } from './prototype-data-repository.service';
                 <td>{{ row.taxType }}</td>
                 <td>
                   <div class="lmx-row-actions">
-                    <button type="button" class="lmx-icon-btn" aria-label="Edit"><span class="material-icons">edit</span></button>
+                    <button
+                      type="button"
+                      class="lmx-icon-btn"
+                      aria-label="Edit"
+                      (click)="$event.stopPropagation(); openEditor(row)"
+                    >
+                      <span class="material-icons">edit</span>
+                    </button>
                     <button type="button" class="lmx-icon-btn" aria-label="Add"><span class="material-icons">add</span></button>
                     <button type="button" class="lmx-icon-btn" aria-label="Delete"><span class="material-icons">delete</span></button>
                     <button type="button" class="lmx-icon-btn" aria-label="Finance"><span class="material-icons">paid</span></button>
@@ -125,9 +137,30 @@ import { PrototypeDataRepository } from './prototype-data-repository.service';
         </div>
       </section>
     </section>
-  `
+  `,
+  styles: [
+    `
+      .customers-grid__row {
+        cursor: default;
+      }
+
+      .customers-grid__row:hover {
+        cursor: pointer;
+      }
+    `
+  ]
 })
 export class CustomersPageComponent {
   private readonly repository = inject(PrototypeDataRepository);
+  private readonly windowManager = inject(WindowManagerService);
   protected readonly customers = this.repository.customers;
+
+  protected openEditor(customer: PrototypeCustomer): void {
+    const title = [customer.surname, customer.name].filter((part) => part && part.trim()).join(' ') || customer.name;
+    this.windowManager.open('prototype-customer', customer.code, title, 'edit');
+  }
+
+  protected openNew(): void {
+    this.windowManager.open('prototype-customer', 'new', 'New customer', 'edit');
+  }
 }

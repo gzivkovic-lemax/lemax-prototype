@@ -2,6 +2,7 @@ import { Injectable, signal } from '@angular/core';
 import { CustomerRepository } from './customer-repository.service';
 import { LemaxWindowKind, LemaxWindowState } from './models';
 import { ProductRepository } from './product-repository.service';
+import { PrototypeDataRepository } from './prototype-data-repository.service';
 import { ReservationRepository } from './reservation-repository.service';
 import { STORAGE_KEYS, StorageService } from './storage.service';
 
@@ -15,7 +16,8 @@ export class WindowManagerService {
     private readonly storage: StorageService,
     private readonly reservationRepository: ReservationRepository,
     private readonly productRepository: ProductRepository,
-    private readonly customerRepository: CustomerRepository
+    private readonly customerRepository: CustomerRepository,
+    private readonly prototypeData: PrototypeDataRepository
   ) {
     this.restore();
   }
@@ -41,7 +43,7 @@ export class WindowManagerService {
       title,
       mode,
       position:
-        kind === 'reservation'
+        kind === 'reservation' || kind === 'prototype-customer'
           ? {
               x: Math.max(16, Math.round((viewportWidth - size.width) / 2)),
               y: Math.max(16, Math.round((viewportHeight - size.height) / 2))
@@ -120,12 +122,20 @@ export class WindowManagerService {
   }
 
   private computeSize(kind: LemaxWindowKind): { width: number; height: number } {
-    if (kind !== 'reservation') {
+    if (kind !== 'reservation' && kind !== 'prototype-customer') {
       return { width: 520, height: 440 };
     }
 
     const viewportWidth = typeof window !== 'undefined' ? window.innerWidth : 1440;
     const viewportHeight = typeof window !== 'undefined' ? window.innerHeight : 900;
+
+    if (kind === 'prototype-customer') {
+      return {
+        width: Math.min(1480, Math.max(1040, Math.round(viewportWidth * 0.9))),
+        height: Math.min(960, Math.max(680, Math.round(viewportHeight * 0.88)))
+      };
+    }
+
     return {
       width: Math.min(1600, Math.max(1100, Math.round(viewportWidth * 0.95))),
       height: Math.min(1100, Math.max(720, Math.round(viewportHeight * 0.92)))
@@ -133,10 +143,10 @@ export class WindowManagerService {
   }
 
   private resizeIfStale(windowState: LemaxWindowState): { width: number; height: number } {
-    if (windowState.kind !== 'reservation') {
+    if (windowState.kind !== 'reservation' && windowState.kind !== 'prototype-customer') {
       return windowState.size;
     }
-    const target = this.computeSize('reservation');
+    const target = this.computeSize(windowState.kind);
     if (windowState.size.width >= target.width - 100) {
       return windowState.size;
     }
@@ -150,6 +160,10 @@ export class WindowManagerService {
 
     if (kind === 'product') {
       return Boolean(this.productRepository.getById(entityId));
+    }
+
+    if (kind === 'prototype-customer') {
+      return entityId === 'new' || Boolean(this.prototypeData.getCustomerByCode(entityId));
     }
 
     return Boolean(this.customerRepository.getById(entityId));

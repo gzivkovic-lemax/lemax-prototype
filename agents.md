@@ -73,6 +73,15 @@ Font: Inter. Material Icons are loaded from Google Fonts in `src/index.html` and
 4. Bump `SEED_DATA_VERSION` when changing the shape so existing browsers re-seed.
 5. Add the repository to `AppDataResetService` (inject + call `refresh()` after re-init) so **Reset all data** keeps it in sync.
 
+### Grid edit interactions
+
+Every grid that exposes an Edit action must open the edit screen as a floating window via `WindowManagerService.open()` — never navigate to a route. Two gestures must both trigger the same open call:
+
+1. **Pencil icon click** — a `.lmx-icon-btn` with `edit` Material Icon in the row-actions cell.
+2. **Row double-click** — a `(dblclick)` handler on the `<tr>` (or equivalent row element).
+
+Both gestures pass the same entity id and open mode. The pencil icon click must call `$event.stopPropagation()` so it doesn't also fire the row's `dblclick` handler.
+
 ### Opening a detail / edit window
 
 Always use `WindowManagerService.open(kind, entityId, title, mode)` — never route to a new page.
