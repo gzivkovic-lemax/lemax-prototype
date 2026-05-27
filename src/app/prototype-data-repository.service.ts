@@ -47,6 +47,34 @@ export interface PrototypeCustomer {
   defaultOptionPeriodDays?: string;
 }
 
+export interface PrototypePassenger {
+  code: string;
+  title?: string;
+  name: string;
+  surname?: string;
+  middleName?: string;
+  oib?: string;
+  birthDate?: string;
+  birthplace?: string;
+  passportNumber?: string;
+  passportIssueDate?: string;
+  passportExpiryDate?: string;
+  passportIssuingCountry?: string;
+  citizenship?: string;
+  sex?: 'Male' | 'Female' | '';
+  language?: string;
+  address?: string;
+  addressLine2?: string;
+  zipCode?: string;
+  city?: string;
+  stateProvince?: string;
+  country?: string;
+  email?: string;
+  telephone?: string;
+  telephone2?: string;
+  mobilePhone?: string;
+}
+
 export interface PrototypeOffer {
   docNo: string;
   resNo: string;
@@ -86,6 +114,7 @@ export interface PrototypeOperation {
 
 export interface PrototypeData {
   customers: PrototypeCustomer[];
+  passengers: PrototypePassenger[];
   offers: PrototypeOffer[];
   accommodations: PrototypeAccommodation[];
   operations: PrototypeOperation[];
@@ -93,7 +122,7 @@ export interface PrototypeData {
 
 const STORAGE_KEY = 'lemax-prototype.prototype-pages';
 const SEED_VERSION_KEY = 'lemax-prototype.prototype-pages.seed-version';
-const SEED_VERSION = 'v3';
+const SEED_VERSION = 'v4';
 
 const SEED: PrototypeData = {
   customers: [
@@ -113,7 +142,24 @@ const SEED: PrototypeData = {
     { code: '624', name: 'Barrett Adam', country: 'UNITED KINGDOM', city: 'Chesterfield', address: '43 Whinfell Road', zipCode: '', telephone: '', type: 'Customer', email: '', mobilePhone: '', taxType: 'Tax payer' },
     { code: '201', name: 'Baudrexl Andreas', country: 'CROATIA', city: '', address: '', zipCode: '', telephone: '', type: 'Customer', email: 'andreasb@designreisen.de', mobilePhone: '', taxType: 'Tax payer' },
     { code: '307', name: 'bb AA', country: 'CROATIA', city: '', address: '', zipCode: '', telephone: '', type: 'Customer', email: 'ret@com.vo', mobilePhone: '', taxType: 'Not tax payer' },
-    { code: '222', name: 'bb bb', country: 'CROATIA', city: '', address: '', zipCode: '', telephone: '', type: 'Customer', email: 'bb@bb.bb', mobilePhone: '', taxType: 'Not tax payer' }
+    { code: '222', name: 'bb bb', country: 'CROATIA', city: '', address: '', zipCode: '', telephone: '', type: 'Customer', email: 'bb@bb.bb', mobilePhone: '', taxType: 'Not tax payer' },
+    { code: '501', name: 'Hilton Hotels & Resorts', country: 'AUSTRIA', city: 'Vienna', address: 'Am Stadtpark 1', zipCode: '1030', telephone: '+43 1 71700', type: 'Supplier', email: 'reservations@hilton.at', mobilePhone: '', taxType: 'Tax payer' },
+    { code: '502', name: 'Transfers Ltd.', country: 'UNITED KINGDOM', city: 'London', address: '12 Park Lane', zipCode: 'W1K 7TN', telephone: '+44 20 7946 0001', type: 'Supplier', email: 'ops@transfers.example', mobilePhone: '', taxType: 'Tax payer' },
+    { code: '503', name: 'Activities Ltd', country: 'AUSTRIA', city: 'Salzburg', address: 'Getreidegasse 9', zipCode: '5020', telephone: '', type: 'Supplier', email: 'hello@activities.example', mobilePhone: '', taxType: 'Tax payer' },
+    { code: '504', name: 'Foreign Hotels Ltd.', country: 'NORWAY', city: 'Oslo', address: 'Karl Johans gate 31', zipCode: '0159', telephone: '', type: 'Supplier', email: 'sales@foreignhotels.example', mobilePhone: '', taxType: 'Tax payer' },
+    { code: '601', name: 'Audley Travel', country: 'UNITED KINGDOM', city: 'London', address: 'This Road 123', zipCode: '', telephone: '+87844784784', type: 'Travel agent', email: 'audley@mailinator.com', mobilePhone: '', taxType: 'Tax payer' },
+    { code: '602', name: 'Russobalt Tours', country: 'RUSSIA', city: 'Moscow', address: 'Tverskaya 22', zipCode: '125009', telephone: '', type: 'Travel agent', email: 'alexp@russobalt.tours', mobilePhone: '', taxType: 'Tax payer' },
+    { code: '603', name: 'Baltic Travel Group', country: 'LATVIA', city: 'Riga', address: 'Elizabetes 31', zipCode: 'LV-1010', telephone: '', type: 'Travel agent', email: 'info@baltictravelgroup.example', mobilePhone: '', taxType: 'Tax payer' }
+  ],
+  passengers: [
+    { code: 'P-100', title: 'Mr.', name: 'John', surname: 'Smith', birthDate: '1985-06-12', country: 'UNITED KINGDOM', city: 'London', address: '12 Baker Street', zipCode: 'NW1 6XE', email: 'john.smith@example.com', mobilePhone: '+44 7700 900100', passportNumber: '503125834', passportIssuingCountry: 'UNITED KINGDOM', citizenship: 'UNITED KINGDOM', sex: 'Male', language: 'English' },
+    { code: 'P-101', title: 'Mrs.', name: 'Anna', surname: 'Smith', birthDate: '1987-09-23', country: 'UNITED KINGDOM', city: 'London', address: '12 Baker Street', zipCode: 'NW1 6XE', email: 'anna.smith@example.com', mobilePhone: '+44 7700 900101', passportNumber: '503125901', passportIssuingCountry: 'UNITED KINGDOM', citizenship: 'UNITED KINGDOM', sex: 'Female', language: 'English' },
+    { code: 'P-102', title: 'Mr.', name: 'Marko', surname: 'Horvat', birthDate: '1979-02-04', country: 'CROATIA', city: 'Zagreb', address: 'Ilica 5', zipCode: '10000', email: 'marko.horvat@example.hr', mobilePhone: '+385 91 111 2222', passportNumber: '123456789', passportIssuingCountry: 'CROATIA', citizenship: 'CROATIA', sex: 'Male', language: 'Croatian' },
+    { code: 'P-103', title: 'Ms.', name: 'Ivana', surname: 'Kovač', birthDate: '1992-11-30', country: 'CROATIA', city: 'Split', address: 'Marmontova 12', zipCode: '21000', email: 'ivana.kovac@example.hr', mobilePhone: '+385 98 555 3344', passportNumber: '234567890', passportIssuingCountry: 'CROATIA', citizenship: 'CROATIA', sex: 'Female', language: 'Croatian' },
+    { code: 'P-104', title: 'Dr.', name: 'Klaus', surname: 'Müller', birthDate: '1968-04-17', country: 'GERMANY', city: 'Munich', address: 'Marienplatz 8', zipCode: '80331', email: 'klaus.mueller@example.de', mobilePhone: '+49 151 1234 5678', passportNumber: 'C8H4K2P9', passportIssuingCountry: 'GERMANY', citizenship: 'GERMANY', sex: 'Male', language: 'German' },
+    { code: 'P-105', title: 'Mrs.', name: 'Sophie', surname: 'Müller', birthDate: '1971-08-02', country: 'GERMANY', city: 'Munich', address: 'Marienplatz 8', zipCode: '80331', email: 'sophie.mueller@example.de', mobilePhone: '+49 151 9876 5432', passportNumber: 'C8H4K2P0', passportIssuingCountry: 'GERMANY', citizenship: 'GERMANY', sex: 'Female', language: 'German' },
+    { code: 'P-106', title: 'Mr.', name: 'Luca', surname: 'Bianchi', birthDate: '1990-01-15', country: 'ITALY', city: 'Milan', address: 'Via Dante 14', zipCode: '20121', email: 'luca.bianchi@example.it', mobilePhone: '+39 333 222 1111', passportNumber: 'YA1234567', passportIssuingCountry: 'ITALY', citizenship: 'ITALY', sex: 'Male', language: 'Italian' },
+    { code: 'P-107', title: 'Ms.', name: 'Chiara', surname: 'Russo', birthDate: '1995-05-26', country: 'ITALY', city: 'Rome', address: 'Via del Corso 200', zipCode: '00186', email: 'chiara.russo@example.it', mobilePhone: '+39 340 555 0011', passportNumber: 'YA2345678', passportIssuingCountry: 'ITALY', citizenship: 'ITALY', sex: 'Female', language: 'Italian' }
   ],
   offers: [
     { docNo: '31/2026', resNo: '9898', tone: 'option', customer: 'Lemax', date: '01/04/2026', branchOffice: 'Central office', createdBy: 'Timko Antonio', vatType: 'On total price', amount: '360.00 EUR' },
@@ -204,6 +250,7 @@ export class PrototypeDataRepository {
   private readonly state = signal<PrototypeData>(SEED);
 
   readonly customers = computed(() => this.state().customers);
+  readonly passengers = computed(() => this.state().passengers);
   readonly offers = computed(() => this.state().offers);
   readonly accommodations = computed(() => this.state().accommodations);
   readonly operations = computed(() => this.state().operations);
@@ -257,6 +304,35 @@ export class PrototypeDataRepository {
       return Number.isFinite(parsed) ? Math.max(max, parsed) : max;
     }, 0);
     return String(maxCode + 1);
+  }
+
+  getPassengerByCode(code: string): PrototypePassenger | undefined {
+    return this.state().passengers.find((passenger) => passenger.code === code);
+  }
+
+  savePassenger(updated: PrototypePassenger): void {
+    const current = this.state();
+    const passengers = current.passengers.map((passenger) =>
+      passenger.code === updated.code ? updated : passenger
+    );
+    const next: PrototypeData = { ...current, passengers };
+    this.state.set(next);
+    this.storage.set(STORAGE_KEY, next);
+  }
+
+  createPassenger(passenger: PrototypePassenger): void {
+    const current = this.state();
+    const next: PrototypeData = { ...current, passengers: [passenger, ...current.passengers] };
+    this.state.set(next);
+    this.storage.set(STORAGE_KEY, next);
+  }
+
+  generatePassengerCode(): string {
+    const maxCode = this.state().passengers.reduce((max, passenger) => {
+      const parsed = Number.parseInt((passenger.code ?? '').replace(/^P-/, ''), 10);
+      return Number.isFinite(parsed) ? Math.max(max, parsed) : max;
+    }, 0);
+    return `P-${maxCode + 1}`;
   }
 
   static get storageKeys(): readonly string[] {

@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { Component, ElementRef, HostListener, inject, signal } from '@angular/core';
+import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AppDataResetService } from './app-data-reset.service';
 import { WindowLayerComponent } from './window-layer.component';
 
@@ -32,7 +32,27 @@ import { WindowLayerComponent } from './window-layer.component';
           <a routerLink="/documents" routerLinkActive="active">Documents</a>
           <a routerLink="/finances" routerLinkActive="active">Finances</a>
           <a routerLink="/products" routerLinkActive="active">Products</a>
-          <a routerLink="/partners" routerLinkActive="active">Partners</a>
+
+          <div
+            class="shell__menu"
+            (mouseenter)="openPartners($event)"
+            (mouseleave)="partnersOpen.set(false)"
+          >
+            <button
+              #partnersTrigger
+              type="button"
+              class="shell__menu-trigger"
+              [class.active]="isPartnersActive()"
+              [class.open]="partnersOpen()"
+              (click)="togglePartners($event, partnersTrigger)"
+              aria-haspopup="true"
+              [attr.aria-expanded]="partnersOpen()"
+            >
+              Partners
+              <span class="material-icons shell__menu-caret">expand_more</span>
+            </button>
+          </div>
+
           <a routerLink="/reports" routerLinkActive="active">Reports</a>
           <a routerLink="/options" routerLinkActive="active">Options</a>
           <button
@@ -60,6 +80,45 @@ import { WindowLayerComponent } from './window-layer.component';
         <router-outlet />
       </main>
 
+      <div
+        *ngIf="partnersOpen()"
+        class="shell__menu-panel"
+        role="menu"
+        [style.left.px]="partnersAnchor().left"
+        [style.top.px]="partnersAnchor().top"
+        (mouseenter)="partnersOpen.set(true)"
+        (mouseleave)="partnersOpen.set(false)"
+      >
+        <a
+          routerLink="/partners/customers"
+          routerLinkActive="active"
+          class="shell__menu-item"
+          role="menuitem"
+          (click)="partnersOpen.set(false)"
+        >Customers</a>
+        <a
+          routerLink="/partners/travel-agents"
+          routerLinkActive="active"
+          class="shell__menu-item"
+          role="menuitem"
+          (click)="partnersOpen.set(false)"
+        >Travel agents</a>
+        <a
+          routerLink="/partners/suppliers"
+          routerLinkActive="active"
+          class="shell__menu-item"
+          role="menuitem"
+          (click)="partnersOpen.set(false)"
+        >Suppliers</a>
+        <a
+          routerLink="/partners/passengers"
+          routerLinkActive="active"
+          class="shell__menu-item"
+          role="menuitem"
+          (click)="partnersOpen.set(false)"
+        >Passengers</a>
+      </div>
+
       <app-window-layer />
     </div>
   `,
@@ -67,6 +126,11 @@ import { WindowLayerComponent } from './window-layer.component';
 })
 export class LemaxShellComponent {
   private readonly resetService = inject(AppDataResetService);
+  private readonly router = inject(Router);
+  private readonly host = inject(ElementRef<HTMLElement>);
+
+  protected readonly partnersOpen = signal(false);
+  protected readonly partnersAnchor = signal<{ left: number; top: number }>({ left: 0, top: 56 });
 
   protected async resetAllData(): Promise<void> {
     const ok = window.confirm(
@@ -74,5 +138,47 @@ export class LemaxShellComponent {
     );
     if (!ok) return;
     await this.resetService.resetAll();
+  }
+
+  protected openPartners(event: MouseEvent): void {
+    const trigger = (event.currentTarget as HTMLElement)?.querySelector(
+      '.shell__menu-trigger'
+    ) as HTMLElement | null;
+    if (trigger) this.anchorTo(trigger);
+    this.partnersOpen.set(true);
+  }
+
+  protected togglePartners(event: MouseEvent, trigger: HTMLElement): void {
+    event.stopPropagation();
+    this.anchorTo(trigger);
+    this.partnersOpen.update((open) => !open);
+  }
+
+  protected isPartnersActive(): boolean {
+    return this.router.url.startsWith('/partners');
+  }
+
+  private anchorTo(trigger: HTMLElement): void {
+    const rect = trigger.getBoundingClientRect();
+    this.partnersAnchor.set({ left: Math.round(rect.left), top: Math.round(rect.bottom) });
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent): void {
+    if (!this.partnersOpen()) return;
+    if (!this.host.nativeElement.contains(event.target as Node)) {
+      this.partnersOpen.set(false);
+    }
+  }
+
+  @HostListener('window:resize')
+  @HostListener('window:scroll')
+  onViewportChange(): void {
+    if (this.partnersOpen()) this.partnersOpen.set(false);
+  }
+
+  @HostListener('document:keydown.escape')
+  onEscape(): void {
+    this.partnersOpen.set(false);
   }
 }

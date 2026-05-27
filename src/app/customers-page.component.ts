@@ -1,7 +1,47 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { PrototypeCustomer, PrototypeDataRepository } from './prototype-data-repository.service';
 import { WindowManagerService } from './window-manager.service';
+
+type PartnerKind = 'customer' | 'supplier' | 'travel-agent';
+
+interface PartnerView {
+  kind: PartnerKind;
+  title: string;
+  newButton: string;
+  newTitle: string;
+  newEntityId: string;
+  matches: (type: string) => boolean;
+}
+
+const VIEWS: Record<PartnerKind, PartnerView> = {
+  customer: {
+    kind: 'customer',
+    title: 'Customers',
+    newButton: 'New customer',
+    newTitle: 'New customer',
+    newEntityId: 'new',
+    matches: (type) => /customer/i.test(type)
+  },
+  supplier: {
+    kind: 'supplier',
+    title: 'Suppliers',
+    newButton: 'New supplier',
+    newTitle: 'New supplier',
+    newEntityId: 'new-supplier',
+    matches: (type) => /supplier/i.test(type)
+  },
+  'travel-agent': {
+    kind: 'travel-agent',
+    title: 'Travel agents',
+    newButton: 'New travel agent',
+    newTitle: 'New travel agent',
+    newEntityId: 'new-travel-agent',
+    matches: (type) => /travel\s*agent/i.test(type)
+  }
+};
 
 @Component({
   selector: 'app-customers-page',
@@ -9,11 +49,11 @@ import { WindowManagerService } from './window-manager.service';
   template: `
     <section class="lmx-list-page">
       <header class="lmx-list-page__header">
-        <h1 class="lmx-page-title">Customers</h1>
+        <h1 class="lmx-page-title">{{ view().title }}</h1>
         <div class="lmx-list-page__actions">
           <button type="button" class="lmx-btn lmx-btn--action" (click)="openNew()">
             <span class="material-icons">add</span>
-            New customer
+            {{ view().newButton }}
           </button>
           <button type="button" class="lmx-btn lmx-btn--action-outline">Import</button>
           <button type="button" class="lmx-btn lmx-btn--action-outline">
@@ -79,7 +119,7 @@ import { WindowManagerService } from './window-manager.service';
             </colgroup>
             <thead>
               <tr>
-                <th><input type="checkbox" aria-label="Select all customers" /></th>
+                <th><input type="checkbox" aria-label="Select all" /></th>
                 <th>Code</th>
                 <th>Name</th>
                 <th>Country</th>
@@ -100,7 +140,7 @@ import { WindowManagerService } from './window-manager.service';
             </thead>
             <tbody>
               <tr
-                *ngFor="let row of customers()"
+                *ngFor="let row of filtered()"
                 class="customers-grid__row"
                 (dblclick)="openEditor(row)"
               >
@@ -132,6 +172,11 @@ import { WindowManagerService } from './window-manager.service';
                   </div>
                 </td>
               </tr>
+              <tr *ngIf="filtered().length === 0">
+                <td colspan="13" class="customers-grid__empty">
+                  No {{ view().title.toLowerCase() }} match the current filter.
+                </td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -147,13 +192,29 @@ import { WindowManagerService } from './window-manager.service';
       .customers-grid__row:hover {
         cursor: pointer;
       }
+
+      .customers-grid__empty {
+        text-align: center;
+        color: var(--lemax-muted);
+        padding: 24px 8px;
+      }
     `
   ]
 })
 export class CustomersPageComponent {
   private readonly repository = inject(PrototypeDataRepository);
   private readonly windowManager = inject(WindowManagerService);
-  protected readonly customers = this.repository.customers;
+  private readonly route = inject(ActivatedRoute);
+  private readonly routeData = toSignal(this.route.data, { initialValue: this.route.snapshot.data });
+
+  protected readonly view = computed<PartnerView>(() => {
+    const kind = (this.routeData()?.['partnerType'] as PartnerKind | undefined) ?? 'customer';
+    return VIEWS[kind] ?? VIEWS.customer;
+  });
+
+  protected readonly filtered = computed(() =>
+    this.repository.customers().filter((row) => this.view().matches(row.type ?? ''))
+  );
 
   protected openEditor(customer: PrototypeCustomer): void {
     const title = [customer.surname, customer.name].filter((part) => part && part.trim()).join(' ') || customer.name;
@@ -161,6 +222,6 @@ export class CustomersPageComponent {
   }
 
   protected openNew(): void {
-    this.windowManager.open('prototype-customer', 'new', 'New customer', 'edit');
+    this.windowManager.open('prototype-customer', this.view().newEntityId, this.view().newTitle, 'edit');
   }
 }

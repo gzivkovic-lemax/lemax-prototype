@@ -43,7 +43,7 @@ export class WindowManagerService {
       title,
       mode,
       position:
-        kind === 'reservation' || kind === 'prototype-customer'
+        kind === 'reservation' || kind === 'prototype-customer' || kind === 'prototype-passenger'
           ? {
               x: Math.max(16, Math.round((viewportWidth - size.width) / 2)),
               y: Math.max(16, Math.round((viewportHeight - size.height) / 2))
@@ -122,7 +122,11 @@ export class WindowManagerService {
   }
 
   private computeSize(kind: LemaxWindowKind): { width: number; height: number } {
-    if (kind !== 'reservation' && kind !== 'prototype-customer') {
+    if (
+      kind !== 'reservation' &&
+      kind !== 'prototype-customer' &&
+      kind !== 'prototype-passenger'
+    ) {
       return { width: 520, height: 440 };
     }
 
@@ -136,6 +140,13 @@ export class WindowManagerService {
       };
     }
 
+    if (kind === 'prototype-passenger') {
+      return {
+        width: Math.min(1280, Math.max(900, Math.round(viewportWidth * 0.78))),
+        height: Math.min(880, Math.max(620, Math.round(viewportHeight * 0.82)))
+      };
+    }
+
     return {
       width: Math.min(1600, Math.max(1100, Math.round(viewportWidth * 0.95))),
       height: Math.min(1100, Math.max(720, Math.round(viewportHeight * 0.92)))
@@ -143,7 +154,11 @@ export class WindowManagerService {
   }
 
   private resizeIfStale(windowState: LemaxWindowState): { width: number; height: number } {
-    if (windowState.kind !== 'reservation' && windowState.kind !== 'prototype-customer') {
+    if (
+      windowState.kind !== 'reservation' &&
+      windowState.kind !== 'prototype-customer' &&
+      windowState.kind !== 'prototype-passenger'
+    ) {
       return windowState.size;
     }
     const target = this.computeSize(windowState.kind);
@@ -163,7 +178,15 @@ export class WindowManagerService {
     }
 
     if (kind === 'prototype-customer') {
-      return entityId === 'new' || Boolean(this.prototypeData.getCustomerByCode(entityId));
+      return (
+        entityId === 'new' ||
+        entityId.startsWith('new-') ||
+        Boolean(this.prototypeData.getCustomerByCode(entityId))
+      );
+    }
+
+    if (kind === 'prototype-passenger') {
+      return entityId === 'new' || Boolean(this.prototypeData.getPassengerByCode(entityId));
     }
 
     return Boolean(this.customerRepository.getById(entityId));

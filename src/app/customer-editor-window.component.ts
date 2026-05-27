@@ -677,10 +677,15 @@ export class CustomerEditorWindowComponent implements OnChanges {
   }
 
   private loadCustomer(): void {
-    if (this.customerCode === 'new') {
+    if (this.customerCode === 'new' || this.customerCode.startsWith('new-')) {
       this.currentCustomer.set(null);
       this.mode.set('person');
       this.form.reset();
+      this.form.patchValue({
+        isCustomer: this.customerCode === 'new',
+        isSupplier: this.customerCode === 'new-supplier',
+        isTravelAgent: this.customerCode === 'new-travel-agent'
+      });
       return;
     }
 

@@ -62,7 +62,12 @@ export interface FilterOptions {
   markets: string[];
 }
 
-export type LemaxWindowKind = 'reservation' | 'product' | 'customer' | 'prototype-customer';
+export type LemaxWindowKind =
+  | 'reservation'
+  | 'product'
+  | 'customer'
+  | 'prototype-customer'
+  | 'prototype-passenger';
 
 export interface LemaxWindowPosition {
   x: number;

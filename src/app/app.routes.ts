@@ -4,6 +4,7 @@ import { CustomersPageComponent } from './customers-page.component';
 import { LemaxShellComponent } from './lemax-shell.component';
 import { OffersPageComponent } from './offers-page.component';
 import { OperationsReportPageComponent } from './operations-report-page.component';
+import { PassengersPageComponent } from './passengers-page.component';
 import { PlaceholderPageComponent } from './placeholder-page.component';
 import { ReservationsPageComponent } from './reservations-page.component';
 
@@ -25,7 +26,23 @@ export const routes: Routes = [
         }
       },
       { path: 'products', component: AccommodationPageComponent },
-      { path: 'partners', component: CustomersPageComponent },
+      { path: 'partners', pathMatch: 'full', redirectTo: 'partners/customers' },
+      {
+        path: 'partners/customers',
+        component: CustomersPageComponent,
+        data: { partnerType: 'customer' }
+      },
+      {
+        path: 'partners/suppliers',
+        component: CustomersPageComponent,
+        data: { partnerType: 'supplier' }
+      },
+      {
+        path: 'partners/travel-agents',
+        component: CustomersPageComponent,
+        data: { partnerType: 'travel-agent' }
+      },
+      { path: 'partners/passengers', component: PassengersPageComponent },
       {
         path: 'reports',
         component: PlaceholderPageComponent,
