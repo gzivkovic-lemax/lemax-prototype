@@ -64,5 +64,159 @@
     "accountManager": "Luka Marin",
     "market": "Preferred Market",
     "notes": "Boutique tailor-made travel partner."
+  },
+  {
+    "id": "cust-baltic",
+    "name": "Baltic Travel Group",
+    "type": "Travel agent",
+    "email": "info@baltictravelgroup.example",
+    "phone": "+371 6770 0100",
+    "branchOffice": "Central office",
+    "accountManager": "Milena Kovac",
+    "market": "Preferred Market",
+    "notes": "Latvian outbound partner."
+  },
+  {
+    "id": "cust-russobalt",
+    "name": "Russobalt Tours",
+    "type": "Travel agent",
+    "email": "alex@russobalt.tours",
+    "phone": "+7 495 555 0150",
+    "branchOffice": "Central office",
+    "accountManager": "Ana Petrovic",
+    "market": "Preferred Market",
+    "notes": "Russia outbound."
+  },
+  {
+    "id": "cust-jet2",
+    "name": "Jet2",
+    "type": "Travel agent",
+    "email": "ops@jet2holidays.example",
+    "phone": "+44 333 300 0100",
+    "branchOffice": "London office",
+    "accountManager": "Luka Marin",
+    "market": "Preferred Market",
+    "notes": "UK outbound, high-volume packages."
+  },
+  {
+    "id": "cust-window-japan",
+    "name": "Window to Japan",
+    "type": "Travel agent",
+    "email": "bookings@windowtojapan.example",
+    "phone": "+81 75 555 1100",
+    "branchOffice": "Singapore office",
+    "accountManager": "Ana Petrovic",
+    "market": "Preferred Market",
+    "notes": "Japan inbound specialist."
+  },
+  {
+    "id": "cust-canadian-rockies",
+    "name": "Canadian Rockies Experience",
+    "type": "Travel agent",
+    "email": "ops@canadianrockies.example",
+    "phone": "+1 403 555 0188",
+    "branchOffice": "New York office",
+    "accountManager": "Luka Marin",
+    "market": "Preferred Market",
+    "notes": "Banff/Calgary based ground operator."
+  },
+  {
+    "id": "cust-magic-dmc",
+    "name": "Magic DMC",
+    "type": "Travel agent",
+    "email": "sales@magicdmc.example",
+    "phone": "+971 4 555 0177",
+    "branchOffice": "Singapore office",
+    "accountManager": "Ana Petrovic",
+    "market": "Preferred Market",
+    "notes": "Dubai DMC handling stopovers."
+  },
+  {
+    "id": "cust-team-europe",
+    "name": "Team Europe",
+    "type": "Travel agent",
+    "email": "rentals@teameurope.example",
+    "phone": "+354 555 0200",
+    "branchOffice": "Central office",
+    "accountManager": "Milena Kovac",
+    "market": "Preferred Market",
+    "notes": "Iceland rental partner."
+  },
+  {
+    "id": "cust-smith",
+    "name": "Smith Annie",
+    "type": "Direct customer",
+    "email": "annie.smith@example.com",
+    "phone": "+44 20 5550 2200",
+    "branchOffice": "London office",
+    "accountManager": "Ivan Horvat",
+    "market": "Preferred Market",
+    "notes": "Repeat direct booker."
+  },
+  {
+    "id": "cust-bellows",
+    "name": "Bellows Clive",
+    "type": "Direct customer",
+    "email": "clive.bellows@example.com",
+    "phone": "+44 20 5550 2300",
+    "branchOffice": "London office",
+    "accountManager": "Ivan Horvat",
+    "market": "Preferred Market",
+    "notes": "Premium direct customer."
+  },
+  {
+    "id": "cust-mueller",
+    "name": "Müller Klaus",
+    "type": "Direct customer",
+    "email": "klaus.mueller@example.de",
+    "phone": "+49 151 1234 5678",
+    "branchOffice": "Central office",
+    "accountManager": "Milena Kovac",
+    "market": "Preferred Market",
+    "notes": "German direct customer."
+  },
+  {
+    "id": "cust-bianchi",
+    "name": "Bianchi Luca",
+    "type": "Direct customer",
+    "email": "luca.bianchi@example.it",
+    "phone": "+39 333 222 1111",
+    "branchOffice": "Central office",
+    "accountManager": "Milena Kovac",
+    "market": "Preferred Market",
+    "notes": "Italian direct customer."
+  },
+  {
+    "id": "cust-airedale",
+    "name": "Airedale International",
+    "type": "Travel agent",
+    "email": "ops@airedale.example",
+    "phone": "+44 113 555 0400",
+    "branchOffice": "London office",
+    "accountManager": "Luka Marin",
+    "market": "Preferred Market",
+    "notes": "Leeds-based UK outbound."
+  },
+  {
+    "id": "cust-designreisen",
+    "name": "Designreisen",
+    "type": "Travel agent",
+    "email": "andreasb@designreisen.de",
+    "phone": "+49 89 555 0500",
+    "branchOffice": "Central office",
+    "accountManager": "Milena Kovac",
+    "market": "Preferred Market",
+    "notes": "German luxury outbound."
+  },
+  {
+    "id": "cust-aloschi",
+    "name": "Aloschi Cruise Line",
+    "type": "Travel agent",
+    "email": "adolfo@aloschibros.example",
+    "phone": "+39 06 555 0600",
+    "branchOffice": "Central office",
+    "accountManager": "Ana Petrovic",
+    "market": "Preferred Market",
+    "notes": "Italian cruise add-on partner."
   }
 ]

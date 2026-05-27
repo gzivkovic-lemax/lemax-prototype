@@ -13,8 +13,9 @@ export const routes: Routes = [
     path: '',
     component: LemaxShellComponent,
     children: [
-      { path: '', pathMatch: 'full', redirectTo: 'reservations' },
-      { path: 'reservations', component: ReservationsPageComponent },
+      { path: '', pathMatch: 'full', redirectTo: 'reservations/all' },
+      { path: 'reservations', pathMatch: 'full', redirectTo: 'reservations/all' },
+      { path: 'reservations/:statusKey', component: ReservationsPageComponent },
       { path: 'operations', component: OperationsReportPageComponent },
       { path: 'documents', component: OffersPageComponent },
       {

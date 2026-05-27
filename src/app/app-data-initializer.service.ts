@@ -8,7 +8,7 @@ interface SeedResource {
   url: string;
 }
 
-const SEED_DATA_VERSION = 'original-reservations-v3';
+const SEED_DATA_VERSION = 'expanded-reservations-v4';
 
 @Injectable({ providedIn: 'root' })
 export class AppDataInitializerService {

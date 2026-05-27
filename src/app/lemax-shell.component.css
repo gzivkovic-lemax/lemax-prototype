@@ -132,6 +132,12 @@
   color: var(--lemax-blue-dark);
 }
 
+.shell__menu-separator {
+  height: 1px;
+  margin: 6px 0;
+  background: var(--lemax-border-soft);
+}
+
 .shell__reset {
   display: inline-flex;
   align-items: center;

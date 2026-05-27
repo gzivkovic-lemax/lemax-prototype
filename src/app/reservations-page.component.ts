@@ -1,6 +1,8 @@
 import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CustomerRepository } from './customer-repository.service';
 import { FilterOptionsRepository } from './filter-options-repository.service';
 import { ProductRepository } from './product-repository.service';
@@ -10,13 +12,21 @@ import { ReservationFilters, SortState } from './models';
 import { StatusBadgeComponent } from './status-badge.component';
 import { WindowManagerService } from './window-manager.service';
 
+function sameIds(left: readonly string[], right: readonly string[]): boolean {
+  if (left.length !== right.length) return false;
+  for (let i = 0; i < left.length; i += 1) {
+    if (left[i] !== right[i]) return false;
+  }
+  return true;
+}
+
 @Component({
   selector: 'app-reservations-page',
   imports: [CommonModule, FormsModule, StatusBadgeComponent, DecimalPipe, DatePipe],
   template: `
     <section class="reservations-page">
       <header class="page-header">
-        <h1 class="lmx-page-title">All reservations</h1>
+        <h1 class="lmx-page-title">{{ pageTitle() }}</h1>
         <div class="page-header__actions">
           <button type="button" class="lmx-btn lmx-btn--action">
             Group actions <span class="caret material-icons">expand_more</span>
@@ -163,7 +173,7 @@ import { WindowManagerService } from './window-manager.service';
             </thead>
 
             <tbody>
-              <tr *ngFor="let row of filteredRows()" (dblclick)="openReservation(row.id)">
+              <tr *ngFor="let row of pagedRows()" (dblclick)="openReservation(row.id)">
                 <td><input type="checkbox" [attr.aria-label]="'Select ' + row.reservationNumber" /></td>
                 <td>
                   <button
@@ -223,6 +233,65 @@ import { WindowManagerService } from './window-manager.service';
             </tbody>
           </table>
         </div>
+
+        <footer class="pagination" *ngIf="filteredRows().length">
+          <div class="pagination__range">{{ pageRangeLabel() }}</div>
+          <div class="pagination__page-size">
+            <label for="page-size">Rows per page:</label>
+            <select
+              id="page-size"
+              class="lmx-select pagination__select"
+              [ngModel]="pageSize()"
+              (ngModelChange)="setPageSize(+$event)"
+            >
+              <option [ngValue]="25">25</option>
+              <option [ngValue]="50">50</option>
+              <option [ngValue]="100">100</option>
+              <option [ngValue]="200">200</option>
+            </select>
+          </div>
+          <div class="pagination__nav">
+            <button
+              type="button"
+              class="lmx-icon-btn"
+              aria-label="First page"
+              [disabled]="currentPage() === 1"
+              (click)="goToPage(1)"
+            >
+              <span class="material-icons">first_page</span>
+            </button>
+            <button
+              type="button"
+              class="lmx-icon-btn"
+              aria-label="Previous page"
+              [disabled]="currentPage() === 1"
+              (click)="goToPage(currentPage() - 1)"
+            >
+              <span class="material-icons">chevron_left</span>
+            </button>
+            <span class="pagination__page-label">
+              Page <strong>{{ currentPage() }}</strong> of {{ totalPages() }}
+            </span>
+            <button
+              type="button"
+              class="lmx-icon-btn"
+              aria-label="Next page"
+              [disabled]="currentPage() === totalPages()"
+              (click)="goToPage(currentPage() + 1)"
+            >
+              <span class="material-icons">chevron_right</span>
+            </button>
+            <button
+              type="button"
+              class="lmx-icon-btn"
+              aria-label="Last page"
+              [disabled]="currentPage() === totalPages()"
+              (click)="goToPage(totalPages())"
+            >
+              <span class="material-icons">last_page</span>
+            </button>
+          </div>
+        </footer>
       </section>
     </section>
   `,
@@ -235,6 +304,12 @@ export class ReservationsPageComponent {
   private readonly statusRepository = inject(ReservationStatusRepository);
   private readonly filterOptionsRepository = inject(FilterOptionsRepository);
   private readonly windowManager = inject(WindowManagerService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
+
+  private readonly routeParams = toSignal(this.route.paramMap, {
+    initialValue: this.route.snapshot.paramMap
+  });
 
   protected readonly showAdvancedFilters = signal(false);
   protected readonly filters = signal<ReservationFilters>({
@@ -251,6 +326,46 @@ export class ReservationsPageComponent {
 
   protected readonly statuses = this.statusRepository.statuses;
   protected readonly filterOptions = this.filterOptionsRepository.filterOptions;
+
+  protected readonly statusKey = computed(() => this.routeParams()?.get('statusKey') ?? 'all');
+
+  protected readonly pageTitle = computed(() => {
+    const key = this.statusKey();
+    if (key === 'all') return 'All reservations';
+    const status = this.statuses().find((entry) => entry.id === key);
+    return status ? `${status.label} reservations` : 'All reservations';
+  });
+
+  constructor() {
+    effect(() => {
+      const key = this.statusKey();
+      const validIds = new Set(this.statuses().map((status) => status.id));
+      const nextIds = key !== 'all' && validIds.has(key) ? [key] : [];
+      this.filters.update((current) =>
+        sameIds(current.statusIds, nextIds) ? current : { ...current, statusIds: nextIds }
+      );
+    });
+
+    effect(() => {
+      const total = this.filteredRows().length;
+      const size = this.pageSize();
+      const lastPage = Math.max(1, Math.ceil(total / size));
+      if (this.currentPage() > lastPage) {
+        this.currentPage.set(lastPage);
+      }
+    });
+  }
+
+  protected setPageSize(size: number): void {
+    if (!Number.isFinite(size) || size <= 0) return;
+    this.pageSize.set(size);
+    this.currentPage.set(1);
+  }
+
+  protected goToPage(page: number): void {
+    const clamped = Math.min(Math.max(1, page), this.totalPages());
+    this.currentPage.set(clamped);
+  }
 
   private readonly rows = computed(() => {
     const customers = new Map(this.customerRepository.customers().map((customer) => [customer.id, customer]));
@@ -305,6 +420,32 @@ export class ReservationsPageComponent {
       .sort((left, right) => this.compareRows(left, right, currentSort));
   });
 
+  protected readonly pageSize = signal(25);
+  protected readonly currentPage = signal(1);
+
+  protected readonly totalPages = computed(() => {
+    const total = this.filteredRows().length;
+    if (!total) return 1;
+    return Math.max(1, Math.ceil(total / this.pageSize()));
+  });
+
+  protected readonly pagedRows = computed(() => {
+    const size = this.pageSize();
+    const page = this.currentPage();
+    const start = (page - 1) * size;
+    return this.filteredRows().slice(start, start + size);
+  });
+
+  protected readonly pageRangeLabel = computed(() => {
+    const total = this.filteredRows().length;
+    if (!total) return '0 of 0';
+    const size = this.pageSize();
+    const page = this.currentPage();
+    const start = (page - 1) * size + 1;
+    const end = Math.min(total, page * size);
+    return `${start}–${end} of ${total}`;
+  });
+
   protected badgeIcon(tone: string): string | null {
     if (tone === 'option') return 'schedule';
     return null;
@@ -316,7 +457,7 @@ export class ReservationsPageComponent {
   }
 
   protected onStatusSelectChange(value: string): void {
-    this.updateFilters({ statusIds: value === 'all' ? [] : [value] });
+    this.router.navigate(['/reservations', value || 'all']);
   }
 
   protected toggleAdvancedFilters(): void {
@@ -325,6 +466,7 @@ export class ReservationsPageComponent {
 
   protected updateFilters(patch: Partial<ReservationFilters>): void {
     this.filters.update((current) => ({ ...current, ...patch }));
+    this.currentPage.set(1);
   }
 
   protected setSort(column: SortState['column']): void {

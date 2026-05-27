@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, ElementRef, HostListener, inject, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AppDataResetService } from './app-data-reset.service';
+import { ReservationStatusRepository } from './reservation-status-repository.service';
 import { WindowLayerComponent } from './window-layer.component';
 
 @Component({
@@ -22,12 +23,26 @@ import { WindowLayerComponent } from './window-layer.component';
         </a>
 
         <nav class="shell__nav">
-          <a
-            routerLink="/reservations"
-            routerLinkActive="active"
-            [routerLinkActiveOptions]="{ exact: false }"
-            >Reservations</a
+          <div
+            class="shell__menu"
+            (mouseenter)="openReservations($event)"
+            (mouseleave)="reservationsOpen.set(false)"
           >
+            <button
+              #reservationsTrigger
+              type="button"
+              class="shell__menu-trigger"
+              [class.active]="isReservationsActive()"
+              [class.open]="reservationsOpen()"
+              (click)="toggleReservations($event, reservationsTrigger)"
+              aria-haspopup="true"
+              [attr.aria-expanded]="reservationsOpen()"
+            >
+              Reservations
+              <span class="material-icons shell__menu-caret">expand_more</span>
+            </button>
+          </div>
+
           <a routerLink="/operations" routerLinkActive="active">Operations</a>
           <a routerLink="/documents" routerLinkActive="active">Documents</a>
           <a routerLink="/finances" routerLinkActive="active">Finances</a>
@@ -81,6 +96,33 @@ import { WindowLayerComponent } from './window-layer.component';
       </main>
 
       <div
+        *ngIf="reservationsOpen()"
+        class="shell__menu-panel"
+        role="menu"
+        [style.left.px]="reservationsAnchor().left"
+        [style.top.px]="reservationsAnchor().top"
+        (mouseenter)="reservationsOpen.set(true)"
+        (mouseleave)="reservationsOpen.set(false)"
+      >
+        <a
+          *ngFor="let status of reservationStatuses()"
+          [routerLink]="['/reservations', status.id]"
+          routerLinkActive="active"
+          class="shell__menu-item"
+          role="menuitem"
+          (click)="reservationsOpen.set(false)"
+        >{{ status.label }}</a>
+        <div class="shell__menu-separator" aria-hidden="true"></div>
+        <a
+          routerLink="/reservations/all"
+          routerLinkActive="active"
+          class="shell__menu-item"
+          role="menuitem"
+          (click)="reservationsOpen.set(false)"
+        >All reservations</a>
+      </div>
+
+      <div
         *ngIf="partnersOpen()"
         class="shell__menu-panel"
         role="menu"
@@ -128,9 +170,14 @@ export class LemaxShellComponent {
   private readonly resetService = inject(AppDataResetService);
   private readonly router = inject(Router);
   private readonly host = inject(ElementRef<HTMLElement>);
+  private readonly statusRepository = inject(ReservationStatusRepository);
 
   protected readonly partnersOpen = signal(false);
   protected readonly partnersAnchor = signal<{ left: number; top: number }>({ left: 0, top: 56 });
+
+  protected readonly reservationsOpen = signal(false);
+  protected readonly reservationsAnchor = signal<{ left: number; top: number }>({ left: 0, top: 56 });
+  protected readonly reservationStatuses = this.statusRepository.statuses;
 
   protected async resetAllData(): Promise<void> {
     const ok = window.confirm(
@@ -144,41 +191,66 @@ export class LemaxShellComponent {
     const trigger = (event.currentTarget as HTMLElement)?.querySelector(
       '.shell__menu-trigger'
     ) as HTMLElement | null;
-    if (trigger) this.anchorTo(trigger);
+    if (trigger) this.partnersAnchor.set(this.computeAnchor(trigger));
+    this.reservationsOpen.set(false);
     this.partnersOpen.set(true);
   }
 
   protected togglePartners(event: MouseEvent, trigger: HTMLElement): void {
     event.stopPropagation();
-    this.anchorTo(trigger);
+    this.partnersAnchor.set(this.computeAnchor(trigger));
+    this.reservationsOpen.set(false);
     this.partnersOpen.update((open) => !open);
+  }
+
+  protected openReservations(event: MouseEvent): void {
+    const trigger = (event.currentTarget as HTMLElement)?.querySelector(
+      '.shell__menu-trigger'
+    ) as HTMLElement | null;
+    if (trigger) this.reservationsAnchor.set(this.computeAnchor(trigger));
+    this.partnersOpen.set(false);
+    this.reservationsOpen.set(true);
+  }
+
+  protected toggleReservations(event: MouseEvent, trigger: HTMLElement): void {
+    event.stopPropagation();
+    this.reservationsAnchor.set(this.computeAnchor(trigger));
+    this.partnersOpen.set(false);
+    this.reservationsOpen.update((open) => !open);
   }
 
   protected isPartnersActive(): boolean {
     return this.router.url.startsWith('/partners');
   }
 
-  private anchorTo(trigger: HTMLElement): void {
+  protected isReservationsActive(): boolean {
+    return this.router.url.startsWith('/reservations');
+  }
+
+  private computeAnchor(trigger: HTMLElement): { left: number; top: number } {
     const rect = trigger.getBoundingClientRect();
-    this.partnersAnchor.set({ left: Math.round(rect.left), top: Math.round(rect.bottom) });
+    return { left: Math.round(rect.left), top: Math.round(rect.bottom) };
   }
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent): void {
-    if (!this.partnersOpen()) return;
+    if (!this.partnersOpen() && !this.reservationsOpen()) return;
     if (!this.host.nativeElement.contains(event.target as Node)) {
       this.partnersOpen.set(false);
+      this.reservationsOpen.set(false);
     }
   }
 
   @HostListener('window:resize')
   @HostListener('window:scroll')
   onViewportChange(): void {
-    if (this.partnersOpen()) this.partnersOpen.set(false);
+    this.partnersOpen.set(false);
+    this.reservationsOpen.set(false);
   }
 
   @HostListener('document:keydown.escape')
   onEscape(): void {
     this.partnersOpen.set(false);
+    this.reservationsOpen.set(false);
   }
 }
