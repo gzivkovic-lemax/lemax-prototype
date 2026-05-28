@@ -69,7 +69,7 @@ Claude Code is the AI assistant that edits the prototype for you. You describe w
 
 1. Open Claude Code.
 2. When it asks for a working folder (or in its session menu), point it at your prototype folder, e.g. `C:\prototypes\feature-X`.
-3. Confirm it loaded the right place by asking it `read agents.md` — it should respond with a summary of how the prototype is structured.
+3. Confirm it loaded the right place by asking it `read CLAUDE.md` — it should respond with a summary of how the prototype is structured.
 
 ### Ask for changes
 
@@ -189,4 +189,4 @@ Delete the prototype folder. Re-download the ZIP from the GitHub link in step 2.
 | Build the share-ready version | Double-click `build.bat` |
 | Files to upload to Cloudflare | `prototype-share.zip` (or `dist\lemax-prototype\browser\`) |
 | Reset prototype data while it's running | "Reset all data" button in the topbar |
-| Guide for AI assistants editing the code | `agents.md` |
+| Guide for AI assistants editing the code | `CLAUDE.md` |

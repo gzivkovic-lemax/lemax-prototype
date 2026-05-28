@@ -346,6 +346,7 @@ type Tab =
         padding: 0 16px;
         flex-shrink: 0;
         overflow-x: auto;
+        overflow-y: hidden;
       }
 
       .editor__tab {

@@ -18,9 +18,9 @@
   --lemax-blue-soft: #eefaff;
   --lemax-blue-tint: #bbecff;
 
-  /* Lemax magenta-red used for primary CTAs (Group actions / OK / New customer) */
-  --lemax-action: #e8345a;
-  --lemax-action-dark: #c52349;
+  /* Lemax pink used for primary CTAs (Group actions / OK / New customer) */
+  --lemax-action: #ff4a73;
+  --lemax-action-dark: #e63566;
 
   /* Status palette (matches iTravel status-badge styles) */
   --status-confirmed-bg: #2dca73;
@@ -186,7 +186,7 @@ textarea.lmx-input {
   border-color: var(--lemax-blue-dark);
 }
 
-/* Magenta-red (primary action / OK / Group actions) */
+/* Lemax pink (primary action / OK / Group actions) */
 .lmx-btn--action {
   background: var(--lemax-action);
   border-color: var(--lemax-action);
@@ -197,14 +197,14 @@ textarea.lmx-input {
   border-color: var(--lemax-action-dark);
 }
 
-/* Magenta-red outline (Import / New customer / Reset) */
+/* Lemax pink outline (Import / New customer / Reset) */
 .lmx-btn--action-outline {
   background: #fff;
   border-color: var(--lemax-action);
   color: var(--lemax-action);
 }
 .lmx-btn--action-outline:hover {
-  background: #fff5f7;
+  background: #fff4f6;
   border-color: var(--lemax-action-dark);
   color: var(--lemax-action-dark);
 }

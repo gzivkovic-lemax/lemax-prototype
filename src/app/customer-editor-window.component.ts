@@ -393,6 +393,7 @@ const TITLES = ['Mr.', 'Mrs.', 'Ms.', 'Dr.', 'Prof.'];
         padding: 0 16px;
         flex-shrink: 0;
         overflow-x: auto;
+        overflow-y: hidden;
       }
 
       .cust__tab {
