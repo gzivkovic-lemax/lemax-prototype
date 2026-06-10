@@ -18,7 +18,6 @@ type Tab =
   | 'passengers'
   | 'reservationReport'
   | 'automaticActions'
-  | 'travelSegments'
   | 'operationsReport';
 
 @Component({
@@ -43,45 +42,64 @@ type Tab =
           <div class="editor__top-cards">
             <article class="lmx-card editor__card editor__card--main">
               <h3 class="editor__card-title">
-                Reservation details ({{ currentReservation()?.reservationNumber }})
+                Reservation details ({{ currentReservation()?.reservationNumber }})<ng-container *ngIf="optionDateLabel()">, Option: {{ optionDateLabel() }}</ng-container>
               </h3>
-              <div class="editor__form-grid">
-                <label class="lmx-field">
-                  <span>Description</span>
-                  <input class="lmx-input" type="text" formControlName="passengerName" />
-                </label>
-                <label class="lmx-field">
-                  <span>Currency</span>
-                  <select class="lmx-select" disabled>
-                    <option>{{ currency() }}</option>
-                  </select>
-                </label>
-                <label class="lmx-field">
-                  <span>Customer</span>
+              <div class="editor__form">
+                <span class="editor__flabel">Description</span>
+                <input class="lmx-input editor__fwide" type="text" formControlName="passengerName" />
+
+                <span class="editor__flabel">Customer</span>
+                <div class="editor__fcontrol">
                   <select class="lmx-select" formControlName="customerId">
                     <option *ngFor="let customer of customers()" [ngValue]="customer.id">{{ customer.name }}</option>
                   </select>
-                </label>
-                <label class="lmx-field">
-                  <span>Created by</span>
+                  <button type="button" class="editor__mini-btn" aria-label="New customer">
+                    <span class="material-icons">add</span>
+                  </button>
+                  <button type="button" class="editor__mini-btn" aria-label="Edit customer">
+                    <span class="material-icons">edit</span>
+                  </button>
+                </div>
+                <span class="editor__flabel">Currency</span>
+                <div class="editor__fcontrol">
+                  <select class="lmx-select">
+                    <option>{{ currency() }}</option>
+                  </select>
+                </div>
+
+                <span class="editor__flabel">Created by</span>
+                <div class="editor__fcontrol">
                   <select class="lmx-select" formControlName="createdBy">
                     <option *ngFor="let employee of filterOptions().createdBy" [ngValue]="employee">
                       {{ employee }}
                     </option>
                   </select>
-                </label>
-                <label class="lmx-field">
-                  <span>Branch office</span>
+                  <button type="button" class="editor__mini-btn" aria-label="New employee">
+                    <span class="material-icons">add</span>
+                  </button>
+                </div>
+                <span class="editor__flabel">Assigned to</span>
+                <div class="editor__fcontrol">
+                  <select class="lmx-select">
+                    <option *ngFor="let employee of filterOptions().createdBy">{{ employee }}</option>
+                  </select>
+                </div>
+
+                <span class="editor__flabel">Branch office</span>
+                <div class="editor__fcontrol">
                   <select class="lmx-select" formControlName="branchOffice">
                     <option *ngFor="let office of filterOptions().branchOffices" [ngValue]="office">{{ office }}</option>
                   </select>
-                </label>
-                <label class="lmx-field">
-                  <span>Department</span>
-                  <select class="lmx-select" disabled>
+                </div>
+                <span class="editor__flabel">Department</span>
+                <div class="editor__fcontrol">
+                  <select class="lmx-select">
                     <option>Default</option>
                   </select>
-                </label>
+                  <button type="button" class="editor__mini-btn" aria-label="New department">
+                    <span class="material-icons">add</span>
+                  </button>
+                </div>
               </div>
             </article>
 
@@ -98,86 +116,50 @@ type Tab =
 
             <article class="lmx-card editor__card">
               <h3 class="editor__card-title">Documents</h3>
-              <div class="editor__docs">
-                <span class="editor__docs-label">Offer</span>
-                <a class="editor__docs-link">Create</a>
-                <a class="editor__docs-link">List</a>
-                <span class="material-icons editor__doc-icon">mail</span>
-                <span class="material-icons editor__doc-icon">picture_as_pdf</span>
-                <span></span>
-
-                <span class="editor__docs-label">Pro forma invoice</span>
-                <a class="editor__docs-link">Create</a>
-                <span></span>
-                <span></span>
-                <span></span>
-                <span></span>
-
-                <span class="editor__docs-label">Supplier inquiry</span>
-                <a class="editor__docs-link">Create</a>
-                <span></span>
-                <span></span>
-                <span></span>
-                <span></span>
-
-                <span class="editor__docs-label">Supplier confirmations</span>
-                <a class="editor__docs-link">Create</a>
-                <a class="editor__docs-link">List</a>
-                <span class="material-icons editor__doc-icon">mail</span>
-                <span class="material-icons editor__doc-icon">picture_as_pdf</span>
-                <span></span>
-
-                <span class="editor__docs-label">Invoice</span>
-                <a class="editor__docs-link">Create</a>
-                <a class="editor__docs-link">List</a>
-                <span class="material-icons editor__doc-icon">mail</span>
-                <span class="material-icons editor__doc-icon">picture_as_pdf</span>
-                <span class="material-icons editor__doc-icon">add</span>
-
-                <span class="editor__docs-label">Supplier Invoice</span>
-                <a class="editor__docs-link">New</a>
-                <span></span>
-                <span></span>
-                <span></span>
-                <span></span>
-
-                <span class="editor__docs-label">Vouchers</span>
-                <a class="editor__docs-link">Create</a>
-                <a class="editor__docs-link">List</a>
-                <span class="material-icons editor__doc-icon">mail</span>
-                <span class="material-icons editor__doc-icon">picture_as_pdf</span>
-                <span></span>
-              </div>
+              <ul class="editor__doc-create-list">
+                <li><span>Offer</span><a class="editor__docs-link">Create</a></li>
+                <li><span>Supplier inquiry</span><a class="editor__docs-link">Create</a></li>
+                <li><span>Itinerary</span><a class="editor__docs-link">Create</a></li>
+                <li><span>Letter</span><a class="editor__docs-link">Create</a></li>
+              </ul>
             </article>
 
-            <article class="lmx-card editor__card editor__status-card">
-              <h3 class="editor__card-title">Status</h3>
-              <div class="editor__status-row">
-                <span class="editor__status-label">Current status:</span>
-                <span
-                  class="editor__status-pill"
-                  [ngClass]="currentStatusTone()"
-                >{{ currentStatusLabel() }}</span>
-              </div>
-              <div class="editor__status-links">
-                <a class="editor__status-link"><span class="material-icons">check_circle</span>Finish</a>
-                <a class="editor__status-link"><span class="material-icons">cancel</span>Cancel</a>
-              </div>
+            <div class="editor__side-stack">
+              <article class="lmx-card editor__card editor__status-card">
+                <h3 class="editor__card-title">Status</h3>
+                <div class="editor__status-row">
+                  <span class="editor__status-label">Current status:</span>
+                  <span
+                    class="editor__status-pill"
+                    [ngClass]="currentStatusTone()"
+                  >{{ currentStatusLabel() }}</span>
+                </div>
+                <div class="editor__status-links">
+                  <a class="editor__status-link editor__status-link--blue">
+                    <span class="material-icons">play_circle</span>Option
+                  </a>
+                  <a class="editor__status-link editor__status-link--blue">
+                    <span class="material-icons">arrow_circle_right</span>Move to unrealized
+                  </a>
+                </div>
+              </article>
 
-              <h3 class="editor__card-title editor__card-title--spaced">Transactions</h3>
-              <div class="editor__transactions">
-                <a class="editor__status-link editor__status-link--blue">
-                  <span class="material-icons editor__money-icon">attach_money</span>Transactions
-                </a>
-                <a class="editor__status-link editor__status-link--blue">
-                  <span class="material-icons">add</span>New payment
-                </a>
-              </div>
-              <div class="editor__paid-row">
-                <div>Paid <strong>{{ form.controls.paid.value | number: '1.2-2' }}</strong></div>
-                <div>Remain. <strong>{{ remainingAmount() | number: '1.2-2' }}</strong></div>
-              </div>
-            </article>
+              <article class="lmx-card editor__card">
+                <h3 class="editor__card-title">Transactions</h3>
+                <div class="editor__transactions">
+                  <a class="editor__status-link editor__status-link--blue">
+                    <span class="material-icons editor__money-icon">monetization_on</span>Transactions
+                  </a>
+                  <a class="editor__status-link editor__status-link--blue">
+                    <span class="material-icons">add</span>New payment
+                  </a>
+                </div>
+                <div class="editor__paid-row">
+                  <div>Paid <strong>{{ form.controls.paid.value | number: '1.2-2' }}</strong></div>
+                  <div>Remain. <strong class="editor__remain">{{ remainingAmount() | number: '1.2-2' }}</strong></div>
+                </div>
+              </article>
+            </div>
           </div>
 
           <div class="editor__items-bar">
@@ -394,9 +376,15 @@ type Tab =
 
       .editor__top-cards {
         display: grid;
-        grid-template-columns: 1.4fr 0.9fr 1.2fr 0.9fr;
+        grid-template-columns: 2fr 0.7fr 1.2fr 1fr;
         gap: 10px;
         align-items: start;
+      }
+
+      .editor__side-stack {
+        display: grid;
+        gap: 10px;
+        align-content: start;
       }
 
       .editor__card {
@@ -410,14 +398,56 @@ type Tab =
         color: var(--lemax-text);
       }
 
-      .editor__card-title--spaced {
-        margin-top: 12px;
-      }
-
       .editor__form-grid {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 10px 12px;
+      }
+
+      .editor__form {
+        display: grid;
+        grid-template-columns: 92px minmax(0, 1fr) 84px minmax(0, 1fr);
+        gap: 14px 12px;
+        align-items: center;
+        font-size: 12px;
+      }
+
+      .editor__flabel {
+        color: var(--lemax-text);
+      }
+
+      .editor__fwide {
+        grid-column: 2 / -1;
+      }
+
+      .editor__fcontrol {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        min-width: 0;
+      }
+
+      .editor__fcontrol .lmx-select {
+        flex: 1;
+        min-width: 0;
+      }
+
+      .editor__mini-btn {
+        border: 0;
+        background: none;
+        padding: 0;
+        cursor: pointer;
+        color: var(--lemax-muted);
+        display: inline-flex;
+        align-items: center;
+      }
+
+      .editor__mini-btn:hover {
+        color: var(--lemax-text);
+      }
+
+      .editor__mini-btn .material-icons {
+        font-size: 18px;
       }
 
       .editor__doc-list {
@@ -438,16 +468,19 @@ type Tab =
         color: var(--lemax-blue);
       }
 
-      .editor__docs {
+      .editor__doc-create-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
         display: grid;
-        grid-template-columns: 1fr auto auto 18px 18px 18px;
-        column-gap: 10px;
-        row-gap: 6px;
+        gap: 8px;
         font-size: 12px;
-        align-items: center;
       }
 
-      .editor__docs-label {
+      .editor__doc-create-list li {
+        display: flex;
+        align-items: center;
+        gap: 14px;
         color: var(--lemax-text);
       }
 
@@ -459,11 +492,6 @@ type Tab =
 
       .editor__docs-link:hover {
         text-decoration: underline;
-      }
-
-      .editor__doc-icon.material-icons {
-        color: var(--lemax-muted);
-        font-size: 16px;
       }
 
       .editor__status-card {
@@ -560,6 +588,7 @@ type Tab =
 
       .editor__paid-row {
         display: flex;
+        justify-content: space-between;
         gap: 16px;
         font-size: 12px;
         color: var(--lemax-text);
@@ -568,6 +597,10 @@ type Tab =
       .editor__paid-row strong {
         margin-left: 4px;
         font-weight: 600;
+      }
+
+      .editor__remain {
+        color: var(--lemax-action);
       }
 
       .editor__totals {
@@ -709,8 +742,9 @@ type Tab =
         .editor__top-cards {
           grid-template-columns: 1.4fr 1fr 1.2fr;
         }
-        .editor__top-cards .editor__status-card {
+        .editor__top-cards .editor__side-stack {
           grid-column: 1 / -1;
+          grid-template-columns: 1fr 1fr;
         }
       }
 
@@ -718,8 +752,9 @@ type Tab =
         .editor__top-cards {
           grid-template-columns: 1fr 1fr;
         }
-        .editor__top-cards .editor__status-card {
+        .editor__top-cards .editor__side-stack {
           grid-column: auto;
+          grid-template-columns: 1fr;
         }
       }
 
@@ -729,6 +764,9 @@ type Tab =
         }
         .editor__form-grid {
           grid-template-columns: 1fr;
+        }
+        .editor__form {
+          grid-template-columns: 92px minmax(0, 1fr);
         }
       }
     `
@@ -762,7 +800,6 @@ export class ReservationEditorWindowComponent implements OnChanges {
     { id: 'passengers', label: 'Passengers' },
     { id: 'reservationReport', label: 'Reservation report' },
     { id: 'automaticActions', label: 'Automatic actions' },
-    { id: 'travelSegments', label: 'Travel segments' },
     { id: 'operationsReport', label: 'Operations report' }
   ];
 
@@ -792,6 +829,16 @@ export class ReservationEditorWindowComponent implements OnChanges {
   );
 
   protected readonly currency = computed(() => this.currentReservation()?.currency ?? 'EUR');
+
+  protected readonly optionDateLabel = computed(() => {
+    const optionDate = this.currentReservation()?.optionDate;
+    if (!optionDate) return '';
+    return new Intl.DateTimeFormat('en-GB', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    }).format(new Date(optionDate));
+  });
 
   protected readonly currentStatusTone = computed(() => {
     const id = this.form.controls.statusId.value || this.currentReservation()?.statusId;
@@ -861,7 +908,6 @@ export class ReservationEditorWindowComponent implements OnChanges {
       'passengers',
       'reservationReport',
       'automaticActions',
-      'travelSegments',
       'operationsReport'
     ];
     return placeholders.includes(this.activeTab());

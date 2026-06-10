@@ -479,7 +479,7 @@ export class ReservationsPageComponent {
   protected copyReservation(reservationId: string): void {
     const copy = this.reservationRepository.duplicate(reservationId);
     if (copy) {
-      this.windowManager.open('reservation', copy.id, `Reservation details (${copy.reservationNumber})`, 'edit');
+      this.windowManager.open('reservation', copy.id, this.reservationWindowTitle(copy.reservationNumber, copy.customerId), 'edit');
     }
   }
 
@@ -490,7 +490,19 @@ export class ReservationsPageComponent {
       return;
     }
 
-    this.windowManager.open('reservation', reservationId, `Reservation details (${reservation.reservationNumber})`, 'edit');
+    this.windowManager.open(
+      'reservation',
+      reservationId,
+      this.reservationWindowTitle(reservation.reservationNumber, reservation.customerId),
+      'edit'
+    );
+  }
+
+  private reservationWindowTitle(reservationNumber: number, customerId: string): string {
+    const customer = this.customerRepository.getById(customerId);
+    return customer
+      ? `Reservation details (${reservationNumber}) ${customer.name}`
+      : `Reservation details (${reservationNumber})`;
   }
 
   protected openProduct(productId: string): void {
