@@ -39,7 +39,6 @@ import { WindowLayerComponent } from './window-layer.component';
               [attr.aria-expanded]="reservationsOpen()"
             >
               Reservations
-              <span class="material-icons shell__menu-caret">expand_more</span>
             </button>
           </div>
 
@@ -64,7 +63,6 @@ import { WindowLayerComponent } from './window-layer.component';
               [attr.aria-expanded]="partnersOpen()"
             >
               Partners
-              <span class="material-icons shell__menu-caret">expand_more</span>
             </button>
           </div>
 

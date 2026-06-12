@@ -89,11 +89,6 @@
   background: rgba(0, 0, 0, 0.12);
 }
 
-.shell__menu-caret {
-  font-size: 18px !important;
-  margin-left: -2px;
-}
-
 .shell__menu-panel {
   position: fixed;
   min-width: 200px;

@@ -31,7 +31,9 @@ function sameIds(left: readonly string[], right: readonly string[]): boolean {
           <button type="button" class="lmx-btn lmx-btn--action">
             Group actions <span class="caret material-icons">expand_more</span>
           </button>
-          <button type="button" class="lmx-btn lmx-btn--action-outline">Import</button>
+          <button type="button" class="lmx-btn lmx-btn--action-outline">
+            <span class="caret material-icons" style="margin-left: 0">download</span>Import
+          </button>
         </div>
       </header>
 
@@ -84,16 +86,6 @@ function sameIds(left: readonly string[], right: readonly string[]): boolean {
             </div>
           </label>
 
-          <div class="filter-card__submit">
-            <button type="button" class="lmx-btn lmx-btn--blue">Filter</button>
-            <button type="button" class="filter-card__advanced" (click)="toggleAdvancedFilters()">
-              Advanced
-              <span class="material-icons">{{ showAdvancedFilters() ? 'expand_less' : 'expand_more' }}</span>
-            </button>
-          </div>
-        </div>
-
-        <div class="filter-card__secondary">
           <div class="lmx-field lmx-field--checkbox">
             <span>Not fully paid</span>
             <label class="lmx-checkbox">
@@ -105,7 +97,17 @@ function sameIds(left: readonly string[], right: readonly string[]): boolean {
             </label>
           </div>
 
-          <label class="lmx-field" *ngIf="showAdvancedFilters()">
+          <div class="filter-card__submit">
+            <button type="button" class="lmx-btn lmx-btn--blue">Filter</button>
+            <button type="button" class="filter-card__advanced" (click)="toggleAdvancedFilters()">
+              Advanced
+              <span class="material-icons">{{ showAdvancedFilters() ? 'expand_less' : 'expand_more' }}</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="filter-card__secondary" *ngIf="showAdvancedFilters()">
+          <label class="lmx-field">
             <span>Find reservation, customer or passenger</span>
             <input
               type="text"
@@ -116,7 +118,7 @@ function sameIds(left: readonly string[], right: readonly string[]): boolean {
             />
           </label>
 
-          <label class="lmx-field" *ngIf="showAdvancedFilters()">
+          <label class="lmx-field">
             <span>Created by</span>
             <select
               class="lmx-select"
@@ -165,7 +167,7 @@ function sameIds(left: readonly string[], right: readonly string[]): boolean {
                   <button type="button" (click)="setSort('cancellationDeadline')">Cancellation...</button>
                 </th>
                 <th class="align-right">
-                  <button type="button" class="lmx-icon-btn" aria-label="Column filters">
+                  <button type="button" class="grid__filter-btn" aria-label="Column filters">
                     <span class="material-icons">filter_alt</span>
                   </button>
                 </th>
@@ -186,8 +188,8 @@ function sameIds(left: readonly string[], right: readonly string[]): boolean {
                       class="grid__res-id"
                       [label]="row.reservationNumber.toString()"
                       [tone]="row.statusTone"
-                      [icon]="badgeIcon(row.statusTone)"
                     />
+                    <span class="material-icons grid__option-clock" *ngIf="row.statusTone === 'option'">schedule</span>
                   </button>
                 </td>
                 <td>
@@ -234,63 +236,45 @@ function sameIds(left: readonly string[], right: readonly string[]): boolean {
           </table>
         </div>
 
-        <footer class="pagination" *ngIf="filteredRows().length">
-          <div class="pagination__range">{{ pageRangeLabel() }}</div>
-          <div class="pagination__page-size">
-            <label for="page-size">Rows per page:</label>
-            <select
-              id="page-size"
-              class="lmx-select pagination__select"
-              [ngModel]="pageSize()"
-              (ngModelChange)="setPageSize(+$event)"
-            >
-              <option [ngValue]="25">25</option>
-              <option [ngValue]="50">50</option>
-              <option [ngValue]="100">100</option>
-              <option [ngValue]="200">200</option>
-            </select>
-          </div>
-          <div class="pagination__nav">
-            <button
-              type="button"
-              class="lmx-icon-btn"
-              aria-label="First page"
-              [disabled]="currentPage() === 1"
-              (click)="goToPage(1)"
-            >
-              <span class="material-icons">first_page</span>
-            </button>
-            <button
-              type="button"
-              class="lmx-icon-btn"
-              aria-label="Previous page"
-              [disabled]="currentPage() === 1"
-              (click)="goToPage(currentPage() - 1)"
-            >
-              <span class="material-icons">chevron_left</span>
-            </button>
-            <span class="pagination__page-label">
-              Page <strong>{{ currentPage() }}</strong> of {{ totalPages() }}
-            </span>
-            <button
-              type="button"
-              class="lmx-icon-btn"
-              aria-label="Next page"
-              [disabled]="currentPage() === totalPages()"
-              (click)="goToPage(currentPage() + 1)"
-            >
-              <span class="material-icons">chevron_right</span>
-            </button>
-            <button
-              type="button"
-              class="lmx-icon-btn"
-              aria-label="Last page"
-              [disabled]="currentPage() === totalPages()"
-              (click)="goToPage(totalPages())"
-            >
-              <span class="material-icons">last_page</span>
-            </button>
-          </div>
+        <footer class="pager" *ngIf="filteredRows().length">
+          <a class="pager__tool">
+            <span class="material-icons">view_column</span>Edit columns
+          </a>
+          <a class="pager__tool">
+            <span class="material-icons">save_alt</span>Data export
+            <span class="material-icons">arrow_drop_down</span>
+          </a>
+          <span class="pager__spacer"></span>
+          <span class="pager__group">
+            Go to page:
+            <input #goPageInput class="lmx-input pager__input" type="text" [value]="currentPage()" />
+            of {{ totalPages() }}
+            <a class="pager__tool" (click)="goToPage(+goPageInput.value || 1)">Go</a>
+          </span>
+          <span class="pager__group">
+            Page size:
+            <input #pageSizeInput class="lmx-input pager__input" type="text" [value]="pageSize()" />
+            <a class="pager__tool" (click)="setPageSize(+pageSizeInput.value)">Change</a>
+          </span>
+          <span class="pager__range">{{ pageRangeLabel() }}</span>
+          <button
+            type="button"
+            class="lmx-icon-btn"
+            aria-label="Previous page"
+            [disabled]="currentPage() === 1"
+            (click)="goToPage(currentPage() - 1)"
+          >
+            <span class="material-icons">chevron_left</span>
+          </button>
+          <button
+            type="button"
+            class="lmx-icon-btn"
+            aria-label="Next page"
+            [disabled]="currentPage() === totalPages()"
+            (click)="goToPage(currentPage() + 1)"
+          >
+            <span class="material-icons">chevron_right</span>
+          </button>
         </footer>
       </section>
     </section>
@@ -443,13 +427,8 @@ export class ReservationsPageComponent {
     const page = this.currentPage();
     const start = (page - 1) * size + 1;
     const end = Math.min(total, page * size);
-    return `${start}–${end} of ${total}`;
+    return `${start}-${end} of ${total}`;
   });
-
-  protected badgeIcon(tone: string): string | null {
-    if (tone === 'option') return 'schedule';
-    return null;
-  }
 
   protected statusSelectValue(): string {
     const ids = this.filters().statusIds;

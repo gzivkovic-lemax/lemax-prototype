@@ -4,7 +4,9 @@
       "Bash(ls \"C:\\\\Users\\\\goran.zivkovic\\\\Downloads\\\\672946204196052258.css\" \"C:\\\\Users\\\\goran.zivkovic\\\\Downloads\\\\view-source_https___presentationdemo.itravelsoftware.com_itravel_admin_Tvrtke_Grid.aspx_vrstaTvrtke=1.html\")",
       "Bash(npx ng *)",
       "Bash(npm run *)",
-      "Bash(node scripts/generate-reservations.mjs)"
+      "Bash(node scripts/generate-reservations.mjs)",
+      "PowerShell(npm run build)",
+      "mcp__Claude_Preview__preview_start"
     ]
   }
 }

@@ -1,4 +1,4 @@
-import { CommonModule, CurrencyPipe } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { Component, Input, OnChanges, SimpleChanges, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CustomerRepository } from './customer-repository.service';
@@ -15,6 +15,7 @@ type Tab =
   | 'custom'
   | 'itinerary'
   | 'communication'
+  | 'payers'
   | 'passengers'
   | 'reservationReport'
   | 'automaticActions'
@@ -22,7 +23,7 @@ type Tab =
 
 @Component({
   selector: 'app-reservation-editor-window',
-  imports: [CommonModule, ReactiveFormsModule, CurrencyPipe],
+  imports: [CommonModule, ReactiveFormsModule],
   template: `
     <form class="editor" [formGroup]="form" (ngSubmit)="save()">
       <nav class="editor__tabs">
@@ -51,7 +52,7 @@ type Tab =
                 <span class="editor__flabel">Customer</span>
                 <div class="editor__fcontrol">
                   <select class="lmx-select" formControlName="customerId">
-                    <option *ngFor="let customer of customers()" [ngValue]="customer.id">{{ customer.name }}</option>
+                    <option *ngFor="let customer of customers()" [ngValue]="customer.id">{{ customer.name }} ({{ customer.email }})</option>
                   </select>
                   <button type="button" class="editor__mini-btn" aria-label="New customer">
                     <span class="material-icons">add</span>
@@ -71,7 +72,7 @@ type Tab =
                 <div class="editor__fcontrol">
                   <select class="lmx-select" formControlName="createdBy">
                     <option *ngFor="let employee of filterOptions().createdBy" [ngValue]="employee">
-                      {{ employee }}
+                      {{ employeeLabel(employee) }}
                     </option>
                   </select>
                   <button type="button" class="editor__mini-btn" aria-label="New employee">
@@ -81,7 +82,7 @@ type Tab =
                 <span class="editor__flabel">Assigned to</span>
                 <div class="editor__fcontrol">
                   <select class="lmx-select">
-                    <option *ngFor="let employee of filterOptions().createdBy">{{ employee }}</option>
+                    <option *ngFor="let employee of filterOptions().createdBy">{{ employeeLabel(employee) }}</option>
                   </select>
                 </div>
 
@@ -117,10 +118,19 @@ type Tab =
             <article class="lmx-card editor__card">
               <h3 class="editor__card-title">Documents</h3>
               <ul class="editor__doc-create-list">
-                <li><span>Offer</span><a class="editor__docs-link">Create</a></li>
+                <li>
+                  <span>Offer</span>
+                  <a class="editor__docs-link">Create</a>
+                  <a class="editor__docs-link">List</a>
+                  <span class="material-icons editor__doc-icon">mail_outline</span>
+                  <span class="material-icons editor__doc-icon">image</span>
+                </li>
+                <li><span>Pro forma invoice</span><a class="editor__docs-link">Create</a></li>
                 <li><span>Supplier inquiry</span><a class="editor__docs-link">Create</a></li>
-                <li><span>Itinerary</span><a class="editor__docs-link">Create</a></li>
-                <li><span>Letter</span><a class="editor__docs-link">Create</a></li>
+                <li><span>Supplier confirmations</span><a class="editor__docs-link">Create</a></li>
+                <li><span>Invoice</span><a class="editor__docs-link">Create</a></li>
+                <li><span>Supplier Invoice</span><a class="editor__docs-link">New</a></li>
+                <li><span>Vouchers</span><a class="editor__docs-link">Create</a></li>
               </ul>
             </article>
 
@@ -136,10 +146,10 @@ type Tab =
                 </div>
                 <div class="editor__status-links">
                   <a class="editor__status-link editor__status-link--blue">
-                    <span class="material-icons">play_circle</span>Option
+                    <span class="material-icons">lock</span>Finish
                   </a>
                   <a class="editor__status-link editor__status-link--blue">
-                    <span class="material-icons">arrow_circle_right</span>Move to unrealized
+                    <span class="material-icons">cancel</span>Cancel
                   </a>
                 </div>
               </article>
@@ -179,7 +189,7 @@ type Tab =
               <span class="material-icons">add</span> Add Flight ad-hoc item
             </button>
             <button type="button" class="lmx-btn lmx-btn--ghost">
-              <span class="material-icons">open_with</span> Copy
+              <span class="material-icons editor__copy-icon">content_copy</span> Copy
             </button>
             <button type="button" class="lmx-btn lmx-btn--ghost">
               Options <span class="material-icons">expand_more</span>
@@ -205,33 +215,38 @@ type Tab =
                 <div class="align-right">Net</div>
                 <div class="align-right">Margin</div>
                 <div>Status</div>
-                <div class="align-right"></div>
+                <div class="align-right">
+                  <button type="button" class="editor__filter-btn" aria-label="Column filters">
+                    <span class="material-icons">filter_alt</span>
+                  </button>
+                </div>
               </div>
               <div class="editor__items-row" *ngFor="let pax of itemPassengers(); let i = index">
                 <div><input type="checkbox" [attr.aria-label]="'Select ' + pax" /></div>
                 <div>
-                  <a>{{ productLabel() }}</a>
+                  <a class="editor__item-link">{{ productLabel() }}</a>
+                  <span class="editor__item-subtext" *ngIf="unitLabel()">{{ unitLabel() }}</span>
                 </div>
                 <div>{{ destinationLabel() }}</div>
-                <div>{{ pax }}</div>
-                <div><a>{{ supplierLabel() }}</a></div>
+                <div><a class="editor__item-link">{{ pax }}</a></div>
+                <div><a class="editor__item-link">{{ supplierLabel() }}</a></div>
                 <div class="align-right">1</div>
                 <div>{{ periodLabel() }}</div>
                 <div class="align-right">
-                  {{ unitPrice() | currency: currency() : 'symbol-narrow' : '1.2-2' }}
+                  {{ unitPrice() | number: '1.2-2' }} {{ currency() }}
                 </div>
                 <div class="align-right">
-                  {{ unitPrice() | currency: currency() : 'symbol-narrow' : '1.2-2' }}
+                  {{ unitPrice() | number: '1.2-2' }} {{ currency() }}
                 </div>
                 <div class="align-right">
-                  {{ unitNet() | currency: currency() : 'symbol-narrow' : '1.2-2' }}
+                  {{ unitNet() | number: '1.2-2' }} {{ currency() }}
                 </div>
                 <div class="align-right">
-                  {{ unitMargin() | currency: currency() : 'symbol-narrow' : '1.2-2' }}
+                  {{ unitMargin() | number: '1.2-2' }} {{ currency() }}
                 </div>
                 <div>
                   <span class="editor__pill">
-                    Initial state <span class="material-icons">expand_more</span>
+                    Initial state <span class="material-icons">arrow_drop_down</span>
                   </span>
                 </div>
                 <div class="align-right">
@@ -251,7 +266,52 @@ type Tab =
                   </div>
                 </div>
               </div>
+
+              <div class="editor__items-row editor__items-row--summary">
+                <div></div>
+                <div>Count : {{ itemPassengers().length }}</div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div class="align-right">{{ totalPrice() | number: '1.2-2' }} {{ currency() }}</div>
+                <div class="align-right">{{ totalPrice() | number: '1.2-2' }} {{ currency() }}</div>
+                <div class="align-right">{{ totalNet() | number: '1.2-2' }} {{ currency() }}</div>
+                <div class="align-right">{{ totalMargin() | number: '1.2-2' }} {{ currency() }}</div>
+                <div></div>
+                <div></div>
+              </div>
             </div>
+
+            <footer class="editor__items-footer">
+              <a class="editor__items-tool">
+                <span class="material-icons">view_column</span>Edit columns
+              </a>
+              <a class="editor__items-tool">
+                <span class="material-icons">save_alt</span>Data export
+                <span class="material-icons">arrow_drop_down</span>
+              </a>
+              <span class="editor__items-footer-spacer"></span>
+              <span class="editor__items-pager">
+                Go to page:
+                <input class="lmx-input editor__pager-input" type="text" value="1" />
+                of 1
+                <a class="editor__items-tool">Go</a>
+              </span>
+              <span class="editor__items-pager">
+                Page size:
+                <input class="lmx-input editor__pager-input" type="text" [value]="itemPassengers().length" />
+                <a class="editor__items-tool">Change</a>
+              </span>
+              <span class="editor__items-range">1-{{ itemPassengers().length }} of {{ itemPassengers().length }}</span>
+              <button type="button" class="lmx-icon-btn" aria-label="Previous page">
+                <span class="material-icons">chevron_left</span>
+              </button>
+              <button type="button" class="lmx-icon-btn" aria-label="Next page">
+                <span class="material-icons">chevron_right</span>
+              </button>
+            </footer>
           </article>
         </ng-container>
 
@@ -475,6 +535,8 @@ type Tab =
         display: grid;
         gap: 8px;
         font-size: 12px;
+        max-height: 138px;
+        overflow-y: auto;
       }
 
       .editor__doc-create-list li {
@@ -482,6 +544,13 @@ type Tab =
         align-items: center;
         gap: 14px;
         color: var(--lemax-text);
+      }
+
+      .editor__doc-icon {
+        font-size: 16px;
+        color: var(--lemax-blue);
+        cursor: pointer;
+        margin-left: -8px;
       }
 
       .editor__docs-link {
@@ -634,6 +703,31 @@ type Tab =
         font-size: 16px;
       }
 
+      .editor__copy-icon {
+        color: var(--lemax-action);
+      }
+
+      .editor__filter-btn {
+        width: 26px;
+        height: 26px;
+        border: 0;
+        border-radius: 4px;
+        background: var(--lemax-blue);
+        color: #fff;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+      }
+
+      .editor__filter-btn:hover {
+        background: var(--lemax-blue-dark);
+      }
+
+      .editor__filter-btn .material-icons {
+        font-size: 16px;
+      }
+
       .editor__items {
         padding: 0;
         overflow: hidden;
@@ -677,20 +771,93 @@ type Tab =
         text-align: right;
       }
 
+      .editor__items-row--summary {
+        font-weight: 600;
+        color: var(--lemax-text);
+      }
+
+      .editor__items-footer {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        padding: 8px 14px;
+        border-top: 1px solid var(--lemax-border-soft);
+        font-size: 12px;
+        color: var(--lemax-text);
+        flex-wrap: wrap;
+      }
+
+      .editor__items-tool {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        color: var(--lemax-blue);
+        cursor: pointer;
+        white-space: nowrap;
+      }
+
+      .editor__items-tool:hover {
+        text-decoration: underline;
+      }
+
+      .editor__items-tool .material-icons {
+        font-size: 18px;
+      }
+
+      .editor__items-footer-spacer {
+        flex: 1;
+      }
+
+      .editor__items-pager {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        white-space: nowrap;
+      }
+
+      .editor__pager-input {
+        width: 44px;
+        height: 26px;
+        padding: 0 6px;
+        text-align: center;
+      }
+
+      .editor__items-range {
+        color: var(--lemax-muted);
+        white-space: nowrap;
+      }
+
       .editor__pill {
         display: inline-flex;
         align-items: center;
-        gap: 2px;
-        padding: 2px 4px 2px 8px;
-        background: #f2f3f5;
         color: var(--lemax-blue);
-        border-radius: 4px;
         font-size: 12px;
         font-weight: 500;
+        cursor: pointer;
+        white-space: nowrap;
+      }
+
+      .editor__pill:hover {
+        text-decoration: underline;
       }
 
       .editor__pill .material-icons {
-        font-size: 16px;
+        font-size: 18px;
+      }
+
+      .editor__item-link {
+        color: var(--lemax-blue);
+        cursor: pointer;
+      }
+
+      .editor__item-link:hover {
+        text-decoration: underline;
+      }
+
+      .editor__item-subtext {
+        display: block;
+        margin-top: 2px;
+        color: var(--lemax-text);
       }
 
       .editor__items input[type='checkbox'] {
@@ -797,6 +964,7 @@ export class ReservationEditorWindowComponent implements OnChanges {
     { id: 'custom', label: 'Custom fields' },
     { id: 'itinerary', label: 'Itinerary description' },
     { id: 'communication', label: 'Communication' },
+    { id: 'payers', label: 'Payers' },
     { id: 'passengers', label: 'Passengers' },
     { id: 'reservationReport', label: 'Reservation report' },
     { id: 'automaticActions', label: 'Automatic actions' },
@@ -901,10 +1069,28 @@ export class ReservationEditorWindowComponent implements OnChanges {
 
   protected readonly unitMargin = computed(() => this.unitPrice() - this.unitNet());
 
+  protected readonly unitLabel = computed(() => {
+    const reservation = this.currentReservation();
+    if (!reservation) return '';
+    const product = this.products().find((p) => p.id === reservation.productId);
+    return product?.unitName ?? '';
+  });
+
+  protected readonly totalPrice = computed(() => this.unitPrice() * this.itemPassengers().length);
+
+  protected readonly totalNet = computed(() => this.unitNet() * this.itemPassengers().length);
+
+  protected readonly totalMargin = computed(() => this.unitMargin() * this.itemPassengers().length);
+
+  protected employeeLabel(name: string): string {
+    return `${name} (${name.toLowerCase().replace(/\s+/g, '.')})`;
+  }
+
   protected isPlaceholderTab(): boolean {
     const placeholders: Tab[] = [
       'itinerary',
       'communication',
+      'payers',
       'passengers',
       'reservationReport',
       'automaticActions',
