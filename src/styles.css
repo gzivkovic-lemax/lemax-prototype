@@ -340,6 +340,10 @@ textarea.lmx-input {
   min-height: 32px;
 }
 
+.lmx-filter-card--compact .lmx-field > span {
+  min-height: 0;
+}
+
 .lmx-filter-card .lmx-input,
 .lmx-filter-card .lmx-select {
   width: 100%;

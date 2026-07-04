@@ -25,6 +25,7 @@ The reference UI being mimicked is the iTravel / Lemax admin (`presentationdemo.
 | `app-data-initializer.service.ts` | Seeds reservation/customer/product/status/filter data from `public/*.json` on first load (controlled by `SEED_DATA_VERSION`). |
 | `app-data-reset.service.ts` | Wipes every prototype-owned localStorage key, re-runs the seed, and refreshes every repo. Wired to the **Reset all data** button. |
 | `storage.service.ts` | Minimal localStorage wrapper. `STORAGE_KEYS` enumerates the keys used by core entities. |
+| `prototype-config.ts` | Static feature-toggle config for tweaking prototype behavior (e.g. `enableBusinessEntities`). Plain exported constant, edited by hand — not persisted, not affected by **Reset all data**. |
 | `reservation-repository.service.ts` | Reservations: load, save, **duplicate**, refresh. |
 | `customer-repository.service.ts`, `product-repository.service.ts`, `reservation-status-repository.service.ts`, `filter-options-repository.service.ts` | Read-only repos for their respective entities. Each exposes `refresh()` for the reset flow. |
 | `prototype-data-repository.service.ts` | Single localStorage-backed store for the **prototype-only** list pages: Customers (Partners), Offers (Documents), Accommodation (Products), Operations report. Holds an in-memory seed; lists are exposed as `computed()` signals. |
@@ -62,6 +63,10 @@ This rule is load-bearing for visual fidelity — apply it whenever you add or r
 If a new screen needs another colored button, pick from `--action` / `--action-outline` / `--blue` / `--ghost` first. Don't introduce new colors without a reason.
 
 ## Patterns to follow
+
+### Toggling prototype behavior
+
+`src/app/prototype-config.ts` holds `PROTOTYPE_CONFIG`, a plain constant with feature flags a PM/engineer can flip by hand to change what the prototype shows (e.g. `enableBusinessEntities`). Import `PROTOTYPE_CONFIG` and read a flag directly (e.g. in a route, nav item, or `*ngIf`) rather than adding a new ad-hoc constant elsewhere. This is a build-time toggle, not user-facing settings UI — it isn't read from `StorageService` and isn't touched by **Reset all data**.
 
 ### Adding a new prototyped list page
 

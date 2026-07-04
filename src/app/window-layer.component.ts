@@ -1,5 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, HostListener, computed, inject } from '@angular/core';
+import { AccommodationEditorWindowComponent } from './accommodation-editor-window.component';
+import { ContractEditorWindowComponent } from './contract-editor-window.component';
 import { CustomerDetailWindowComponent } from './customer-detail-window.component';
 import { CustomerEditorWindowComponent } from './customer-editor-window.component';
 import { PassengerEditorWindowComponent } from './passenger-editor-window.component';
@@ -17,7 +19,9 @@ import { FloatingWindowComponent } from './floating-window.component';
     ProductDetailWindowComponent,
     CustomerDetailWindowComponent,
     CustomerEditorWindowComponent,
-    PassengerEditorWindowComponent
+    PassengerEditorWindowComponent,
+    AccommodationEditorWindowComponent,
+    ContractEditorWindowComponent
   ],
   template: `
     <ng-container *ngIf="hasWindows()">
@@ -49,6 +53,18 @@ import { FloatingWindowComponent } from './floating-window.component';
           <app-passenger-editor-window
             *ngIf="windowState.kind === 'prototype-passenger'"
             [passengerCode]="windowState.entityId"
+            [windowId]="windowState.windowId"
+          />
+
+          <app-accommodation-editor-window
+            *ngIf="windowState.kind === 'prototype-accommodation'"
+            [accommodationCode]="windowState.entityId"
+            [windowId]="windowState.windowId"
+          />
+
+          <app-contract-editor-window
+            *ngIf="windowState.kind === 'prototype-contract'"
+            [entityId]="windowState.entityId"
             [windowId]="windowState.windowId"
           />
         </app-floating-window>

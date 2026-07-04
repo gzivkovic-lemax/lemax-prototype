@@ -6,7 +6,8 @@
       "Bash(npm run *)",
       "Bash(node scripts/generate-reservations.mjs)",
       "PowerShell(npm run build)",
-      "mcp__Claude_Preview__preview_start"
+      "mcp__Claude_Preview__preview_start",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:4200)"
     ]
   }
 }

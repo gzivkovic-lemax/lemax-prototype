@@ -96,6 +96,37 @@ export interface PrototypeAccommodation {
   supplier: string;
   department: string;
   internalName: string;
+  type?: string;
+  businessEntities?: string[];
+  cashAdvance?: boolean;
+  bookingCurrency?: string;
+  contactPhoneReception?: string;
+  contactEmail?: string;
+  webPage?: string;
+  contactPhone?: string;
+  contactFax?: string;
+  address?: string;
+  numberOfStars?: string;
+  searchPriority?: string;
+  infantAge?: string;
+  checkIn?: string;
+  checkOut?: string;
+  houseRateAllowed?: boolean;
+}
+
+export interface PrototypeContract {
+  code: string;
+  accommodationCode: string;
+  businessEntity: string;
+  name: string;
+  type: string;
+  validityStart: string;
+  validityEnd: string;
+  minPs: number;
+  priority: number;
+  status: string;
+  dontCalculateDestinationServices?: boolean;
+  specialOffer?: boolean;
 }
 
 export interface PrototypeOperation {
@@ -117,12 +148,82 @@ export interface PrototypeData {
   passengers: PrototypePassenger[];
   offers: PrototypeOffer[];
   accommodations: PrototypeAccommodation[];
+  contracts: PrototypeContract[];
   operations: PrototypeOperation[];
 }
 
+export const BUSINESS_ENTITIES = ['Croatia', 'Austria', 'Germany'];
+
+/** The prototype's current user belongs to a single business entity; filters default to it. */
+export const CURRENT_USER_BUSINESS_ENTITY = 'Croatia';
+
 const STORAGE_KEY = 'lemax-prototype.prototype-pages';
 const SEED_VERSION_KEY = 'lemax-prototype.prototype-pages.seed-version';
-const SEED_VERSION = 'v4';
+const SEED_VERSION = 'v7';
+
+const ACCOMMODATIONS: PrototypeAccommodation[] = [
+  { code: '8871', name: 'Hilton Parks', country: 'Europe', region: 'Austria', destination: 'Vienna', supplier: 'Hilton Hotels & Resorts, Wien, Am Stadtpark 1', department: 'Default', internalName: '', businessEntities: ['Austria'] },
+  { code: '9972', name: 'Hilton Parks Hvar', country: 'Croatia', region: 'South Dalmatia', destination: 'Hvar', supplier: 'Hilton Hotels & Resorts, Wien, Am Stadtpark 1', department: 'Default', internalName: '', businessEntities: ['Croatia'] },
+  { code: '9524', name: 'PARK PIOLETS', country: 'Andorra', region: 'Andorra', destination: 'Andorra', supplier: 'Tripical', department: '', internalName: '', businessEntities: ['Austria'] },
+  { code: '12114', name: 'Sea Bed Rooms and Apartment | Guest House', country: 'Croatia', region: 'Middle Dalmatia', destination: 'Split', supplier: 'Aborda d.o.o.', department: '', internalName: '', businessEntities: ['Croatia'] },
+  { code: '7704', name: '2nd driver', country: 'Worldwide', region: 'Worldwide', destination: 'Worldwide', supplier: 'Lucketts Travel Holidays', department: 'Default', internalName: '', businessEntities: ['Croatia', 'Austria', 'Germany'] },
+  { code: '8977', name: '4 Star Innsbruck', country: 'Europe', region: 'Austria', destination: 'Innsbruck', supplier: 'Hotel Innsbruck', department: 'Default', internalName: '', businessEntities: ['Austria'] },
+  { code: '8971', name: '5 Star Hotel Vienna', country: 'Europe', region: 'Austria', destination: 'Vienna', supplier: 'Activities Ltd', department: 'Default', internalName: '', businessEntities: ['Austria', 'Germany'] },
+  { code: '8974', name: '5 Star Salzburg Hotel', country: 'Europe', region: 'Austria', destination: 'Salzburg', supplier: 'Activities Ltd', department: 'Default', internalName: '', businessEntities: ['Austria'] },
+  { code: '1083', name: 'Aetas Lumpini', country: 'Thailand', region: 'Bangkok Area', destination: 'Bangkok', supplier: 'Lemax', department: '', internalName: '', businessEntities: ['Germany'] },
+  { code: '10322', name: 'Airport Assistance', country: 'Peru', region: 'Lima Province', destination: 'Lima', supplier: 'Peru Travel Company', department: '', internalName: '', businessEntities: ['Germany'] },
+  { code: '2982', name: 'All C. - Internal Guide - Spanish', country: 'United Arab Emirates', region: 'Dubai', destination: 'Dubai', supplier: 'Lemax Booking', department: '', internalName: '', businessEntities: ['Croatia'] },
+  { code: '8201', name: 'All Inclusive (Adulty Only Resort 16yrs+)', country: 'Mauritius', region: 'Mauritius', destination: 'Mauritius', supplier: 'Sunlife', department: '', internalName: '', businessEntities: ['Austria', 'Germany'] },
+  { code: '6955', name: 'Amadria park', country: 'Croatia', region: 'North Dalmatia', destination: 'Sibenik', supplier: 'Hotel Andrija', department: 'Default', internalName: '', businessEntities: ['Croatia'] },
+  { code: '11888', name: 'Ananea Madivaru Maldives', country: 'Maldives', region: 'Male', destination: 'Male Intl Arpt', supplier: 'Maldives DMC Supplier', department: '', internalName: '', businessEntities: ['Croatia'] },
+  { code: '174', name: 'Anker Hotel', country: 'Norway', region: 'Oslo', destination: 'Oslo', supplier: 'Foreign Hotels Ltd.', department: 'Default', internalName: '', businessEntities: ['Croatia', 'Germany'] },
+  { code: '8696', name: 'Another hotel from chain', country: 'Chile', region: 'Santiago', destination: 'Santiago', supplier: 'Activities Ltd', department: '', internalName: '', businessEntities: ['Germany'] },
+  { code: '37', name: 'Apartment Studio Guliver', country: 'Croatia', region: 'Istria', destination: 'Pula x', supplier: 'Lemax', department: 'Default', internalName: '', businessEntities: ['Croatia', 'Austria'] },
+  { code: '34', name: 'Apartment Studio Sestan', country: 'Croatia', region: 'Istria', destination: 'Pula x', supplier: 'Lemax', department: 'Default', internalName: '', businessEntities: ['Croatia'] }
+];
+
+export const CONTRACT_TYPES = ['FIT', 'Group', 'Allotment'];
+
+const CONTRACT_TEMPLATES = [
+  { type: 'FIT', name: 'FIT contract summer 2026', validityStart: '01/04/2026', validityEnd: '01/10/2026' },
+  { type: 'Group', name: 'Group contract winter 2026/27', validityStart: '01/11/2026', validityEnd: '31/03/2027' },
+  { type: 'Allotment', name: 'Allotment contract 2026/27', validityStart: '01/04/2026', validityEnd: '31/03/2027' }
+];
+
+function buildContractsForAccommodation(
+  accommodation: PrototypeAccommodation,
+  sequenceRef: { value: number }
+): PrototypeContract[] {
+  const entities = accommodation.businessEntities ?? [];
+  const isMultiEntity = entities.length > 1;
+
+  return entities.flatMap((entity, entityIndex) => {
+    const contractCount = isMultiEntity ? (entityIndex === 0 ? 3 : 2) : 1;
+
+    return Array.from({ length: contractCount }, (_, index) => {
+      const template = CONTRACT_TEMPLATES[sequenceRef.value % CONTRACT_TEMPLATES.length];
+      const contract: PrototypeContract = {
+        code: String(4830 + sequenceRef.value),
+        accommodationCode: accommodation.code,
+        businessEntity: entity,
+        name: template.name,
+        type: template.type,
+        validityStart: template.validityStart,
+        validityEnd: template.validityEnd,
+        minPs: 1,
+        priority: index + 1,
+        status: 'Active'
+      };
+      sequenceRef.value += 1;
+      return contract;
+    });
+  });
+}
+
+const CONTRACTS: PrototypeContract[] = (() => {
+  const sequenceRef = { value: 0 };
+  return ACCOMMODATIONS.flatMap((accommodation) => buildContractsForAccommodation(accommodation, sequenceRef));
+})();
 
 const SEED: PrototypeData = {
   customers: [
@@ -179,26 +280,8 @@ const SEED: PrototypeData = {
     { docNo: '12/2026', resNo: '9917', tone: 'confirmed', customer: 'Johnson Adam', date: '15/01/2026', branchOffice: 'Online booking (B2C)', createdBy: 'Johnson Roy', vatType: 'On margin', amount: '2,808.92 EUR' },
     { docNo: '15/2026', resNo: '9924', tone: 'confirmed', customer: 'Johnson Roy', date: '15/01/2026', branchOffice: 'Online booking (B2C)', createdBy: 'Johnson Roy', vatType: 'On margin', amount: '1,128.50 GBP' }
   ],
-  accommodations: [
-    { code: '8871', name: 'Hilton Parks', country: 'Europe', region: 'Austria', destination: 'Vienna', supplier: 'Hilton Hotels & Resorts, Wien, Am Stadtpark 1', department: 'Default', internalName: '' },
-    { code: '9972', name: 'Hilton Parks Hvar', country: 'Croatia', region: 'South Dalmatia', destination: 'Hvar', supplier: 'Hilton Hotels & Resorts, Wien, Am Stadtpark 1', department: 'Default', internalName: '' },
-    { code: '9524', name: 'PARK PIOLETS', country: 'Andorra', region: 'Andorra', destination: 'Andorra', supplier: 'Tripical', department: '', internalName: '' },
-    { code: '12114', name: 'Sea Bed Rooms and Apartment | Guest House', country: 'Croatia', region: 'Middle Dalmatia', destination: 'Split', supplier: 'Aborda d.o.o.', department: '', internalName: '' },
-    { code: '7704', name: '2nd driver', country: 'Worldwide', region: 'Worldwide', destination: 'Worldwide', supplier: 'Lucketts Travel Holidays', department: 'Default', internalName: '' },
-    { code: '8977', name: '4 Star Innsbruck', country: 'Europe', region: 'Austria', destination: 'Innsbruck', supplier: 'Hotel Innsbruck', department: 'Default', internalName: '' },
-    { code: '8971', name: '5 Star Hotel Vienna', country: 'Europe', region: 'Austria', destination: 'Vienna', supplier: 'Activities Ltd', department: 'Default', internalName: '' },
-    { code: '8974', name: '5 Star Salzburg Hotel', country: 'Europe', region: 'Austria', destination: 'Salzburg', supplier: 'Activities Ltd', department: 'Default', internalName: '' },
-    { code: '1083', name: 'Aetas Lumpini', country: 'Thailand', region: 'Bangkok Area', destination: 'Bangkok', supplier: 'Lemax', department: '', internalName: '' },
-    { code: '10322', name: 'Airport Assistance', country: 'Peru', region: 'Lima Province', destination: 'Lima', supplier: 'Peru Travel Company', department: '', internalName: '' },
-    { code: '2982', name: 'All C. - Internal Guide - Spanish', country: 'United Arab Emirates', region: 'Dubai', destination: 'Dubai', supplier: 'Lemax Booking', department: '', internalName: '' },
-    { code: '8201', name: 'All Inclusive (Adulty Only Resort 16yrs+)', country: 'Mauritius', region: 'Mauritius', destination: 'Mauritius', supplier: 'Sunlife', department: '', internalName: '' },
-    { code: '6955', name: 'Amadria park', country: 'Croatia', region: 'North Dalmatia', destination: 'Sibenik', supplier: 'Hotel Andrija', department: 'Default', internalName: '' },
-    { code: '11888', name: 'Ananea Madivaru Maldives', country: 'Maldives', region: 'Male', destination: 'Male Intl Arpt', supplier: 'Maldives DMC Supplier', department: '', internalName: '' },
-    { code: '174', name: 'Anker Hotel', country: 'Norway', region: 'Oslo', destination: 'Oslo', supplier: 'Foreign Hotels Ltd.', department: 'Default', internalName: '' },
-    { code: '8696', name: 'Another hotel from chain', country: 'Chile', region: 'Santiago', destination: 'Santiago', supplier: 'Activities Ltd', department: '', internalName: '' },
-    { code: '37', name: 'Apartment Studio Guliver', country: 'Croatia', region: 'Istria', destination: 'Pula x', supplier: 'Lemax', department: 'Default', internalName: '' },
-    { code: '34', name: 'Apartment Studio Sestan', country: 'Croatia', region: 'Istria', destination: 'Pula x', supplier: 'Lemax', department: 'Default', internalName: '' }
-  ],
+  accommodations: ACCOMMODATIONS,
+  contracts: CONTRACTS,
   operations: (() => {
     const hotelRows: PrototypeOperation[] = Array.from({ length: 10 }, (_, index) => ({
       opsNo: '10141',
@@ -253,6 +336,7 @@ export class PrototypeDataRepository {
   readonly passengers = computed(() => this.state().passengers);
   readonly offers = computed(() => this.state().offers);
   readonly accommodations = computed(() => this.state().accommodations);
+  readonly contracts = computed(() => this.state().contracts);
   readonly operations = computed(() => this.state().operations);
 
   constructor(private readonly storage: StorageService) {
@@ -301,6 +385,66 @@ export class PrototypeDataRepository {
   generateCustomerCode(): string {
     const maxCode = this.state().customers.reduce((max, customer) => {
       const parsed = Number.parseInt(customer.code, 10);
+      return Number.isFinite(parsed) ? Math.max(max, parsed) : max;
+    }, 0);
+    return String(maxCode + 1);
+  }
+
+  getAccommodationByCode(code: string): PrototypeAccommodation | undefined {
+    return this.state().accommodations.find((accommodation) => accommodation.code === code);
+  }
+
+  saveAccommodation(updated: PrototypeAccommodation): void {
+    const current = this.state();
+    const accommodations = current.accommodations.map((accommodation) =>
+      accommodation.code === updated.code ? updated : accommodation
+    );
+    const next: PrototypeData = { ...current, accommodations };
+    this.state.set(next);
+    this.storage.set(STORAGE_KEY, next);
+  }
+
+  createAccommodation(accommodation: PrototypeAccommodation): void {
+    const current = this.state();
+    const next: PrototypeData = { ...current, accommodations: [accommodation, ...current.accommodations] };
+    this.state.set(next);
+    this.storage.set(STORAGE_KEY, next);
+  }
+
+  generateAccommodationCode(): string {
+    const maxCode = this.state().accommodations.reduce((max, accommodation) => {
+      const parsed = Number.parseInt(accommodation.code, 10);
+      return Number.isFinite(parsed) ? Math.max(max, parsed) : max;
+    }, 0);
+    return String(maxCode + 1);
+  }
+
+  getContractsForAccommodation(accommodationCode: string): PrototypeContract[] {
+    return this.state().contracts.filter((contract) => contract.accommodationCode === accommodationCode);
+  }
+
+  getContractByCode(code: string): PrototypeContract | undefined {
+    return this.state().contracts.find((contract) => contract.code === code);
+  }
+
+  saveContract(updated: PrototypeContract): void {
+    const current = this.state();
+    const contracts = current.contracts.map((contract) => (contract.code === updated.code ? updated : contract));
+    const next: PrototypeData = { ...current, contracts };
+    this.state.set(next);
+    this.storage.set(STORAGE_KEY, next);
+  }
+
+  createContract(contract: PrototypeContract): void {
+    const current = this.state();
+    const next: PrototypeData = { ...current, contracts: [contract, ...current.contracts] };
+    this.state.set(next);
+    this.storage.set(STORAGE_KEY, next);
+  }
+
+  generateContractCode(): string {
+    const maxCode = this.state().contracts.reduce((max, contract) => {
+      const parsed = Number.parseInt(contract.code, 10);
       return Number.isFinite(parsed) ? Math.max(max, parsed) : max;
     }, 0);
     return String(maxCode + 1);

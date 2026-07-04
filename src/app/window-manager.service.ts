@@ -43,7 +43,11 @@ export class WindowManagerService {
       title,
       mode,
       position:
-        kind === 'reservation' || kind === 'prototype-customer' || kind === 'prototype-passenger'
+        kind === 'reservation' ||
+        kind === 'prototype-customer' ||
+        kind === 'prototype-passenger' ||
+        kind === 'prototype-accommodation' ||
+        kind === 'prototype-contract'
           ? {
               x: Math.max(16, Math.round((viewportWidth - size.width) / 2)),
               y: Math.max(16, Math.round((viewportHeight - size.height) / 2))
@@ -53,7 +57,7 @@ export class WindowManagerService {
               y: 88 + (windowCount % 4) * 24
             },
       size,
-      zIndex: BASE_Z_INDEX + windowCount + 1,
+      zIndex: this.getNextZIndex(),
       active: true
     };
 
@@ -125,7 +129,9 @@ export class WindowManagerService {
     if (
       kind !== 'reservation' &&
       kind !== 'prototype-customer' &&
-      kind !== 'prototype-passenger'
+      kind !== 'prototype-passenger' &&
+      kind !== 'prototype-accommodation' &&
+      kind !== 'prototype-contract'
     ) {
       return { width: 520, height: 440 };
     }
@@ -157,7 +163,9 @@ export class WindowManagerService {
     if (
       windowState.kind !== 'reservation' &&
       windowState.kind !== 'prototype-customer' &&
-      windowState.kind !== 'prototype-passenger'
+      windowState.kind !== 'prototype-passenger' &&
+      windowState.kind !== 'prototype-accommodation' &&
+      windowState.kind !== 'prototype-contract'
     ) {
       return windowState.size;
     }
@@ -187,6 +195,17 @@ export class WindowManagerService {
 
     if (kind === 'prototype-passenger') {
       return entityId === 'new' || Boolean(this.prototypeData.getPassengerByCode(entityId));
+    }
+
+    if (kind === 'prototype-accommodation') {
+      return entityId === 'new' || Boolean(this.prototypeData.getAccommodationByCode(entityId));
+    }
+
+    if (kind === 'prototype-contract') {
+      const [accommodationCode, contractCode] = entityId.split(':');
+      return contractCode === 'new'
+        ? Boolean(this.prototypeData.getAccommodationByCode(accommodationCode))
+        : Boolean(this.prototypeData.getContractByCode(contractCode));
     }
 
     return Boolean(this.customerRepository.getById(entityId));
