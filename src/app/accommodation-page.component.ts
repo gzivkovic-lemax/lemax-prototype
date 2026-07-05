@@ -47,7 +47,7 @@ import { WindowManagerService } from './window-manager.service';
         </div>
 
         <div class="lmx-filter-card__submit">
-          <button type="button" class="lmx-btn lmx-btn--blue">Filter</button>
+          <button type="button" class="lmx-btn lmx-btn--blue" (click)="applyFilter()">Filter</button>
         </div>
       </section>
 
@@ -131,9 +131,10 @@ export class AccommodationPageComponent {
   protected readonly accommodations = this.repository.accommodations;
   protected readonly enableBusinessEntities = PROTOTYPE_CONFIG.enableBusinessEntities;
   protected readonly selectedBusinessEntities = signal<string[]>([CURRENT_USER_BUSINESS_ENTITY]);
+  protected readonly appliedBusinessEntities = signal<string[]>([CURRENT_USER_BUSINESS_ENTITY]);
 
   protected readonly filteredAccommodations = computed(() => {
-    const selected = this.selectedBusinessEntities();
+    const selected = this.appliedBusinessEntities();
     if (selected.length === 0) {
       return this.accommodations();
     }
@@ -141,6 +142,10 @@ export class AccommodationPageComponent {
       (row.businessEntities ?? []).some((entity) => selected.includes(entity))
     );
   });
+
+  protected applyFilter(): void {
+    this.appliedBusinessEntities.set(this.selectedBusinessEntities());
+  }
 
   protected openEditor(row: PrototypeAccommodation): void {
     const title = row.destination ? `${row.name} (${row.destination})` : row.name;

@@ -242,7 +242,7 @@ type ContractsSubTab = 'contracts' | 'supplierOffers' | 'companyOffers' | 'avail
                 />
               </div>
               <div class="lmx-filter-card__submit">
-                <button type="button" class="lmx-btn lmx-btn--blue">Filter</button>
+                <button type="button" class="lmx-btn lmx-btn--blue" (click)="applyContractsFilter()">Filter</button>
               </div>
             </section>
 
@@ -704,16 +704,21 @@ export class AccommodationEditorWindowComponent implements OnChanges {
     return code ? this.prototypeData.getContractsForAccommodation(code) : [];
   });
   protected readonly selectedContractBusinessEntities = signal<string[]>([CURRENT_USER_BUSINESS_ENTITY]);
+  protected readonly appliedContractBusinessEntities = signal<string[]>([CURRENT_USER_BUSINESS_ENTITY]);
   protected readonly todayIso = new Date().toISOString().slice(0, 10);
 
   protected readonly filteredContractRows = computed(() => {
-    const selected = this.selectedContractBusinessEntities();
+    const selected = this.appliedContractBusinessEntities();
     const rows = this.contractsForAccommodation();
     if (selected.length === 0) {
       return rows;
     }
     return rows.filter((row) => selected.includes(row.businessEntity));
   });
+
+  protected applyContractsFilter(): void {
+    this.appliedContractBusinessEntities.set(this.selectedContractBusinessEntities());
+  }
 
   protected readonly typeLabel = computed(() => this.currentAccommodation()?.type || 'Hotel');
 
@@ -804,6 +809,7 @@ export class AccommodationEditorWindowComponent implements OnChanges {
       this.currentAccommodation.set(null);
       this.selectedBusinessEntities.set([]);
       this.selectedContractBusinessEntities.set([CURRENT_USER_BUSINESS_ENTITY]);
+      this.appliedContractBusinessEntities.set([CURRENT_USER_BUSINESS_ENTITY]);
       this.form.reset();
       return;
     }
@@ -816,6 +822,7 @@ export class AccommodationEditorWindowComponent implements OnChanges {
     this.currentAccommodation.set(accommodation);
     this.selectedBusinessEntities.set(accommodation.businessEntities ?? []);
     this.selectedContractBusinessEntities.set([CURRENT_USER_BUSINESS_ENTITY]);
+    this.appliedContractBusinessEntities.set([CURRENT_USER_BUSINESS_ENTITY]);
     this.form.reset({
       destination: accommodation.destination ?? '',
       supplier: accommodation.supplier ?? '',

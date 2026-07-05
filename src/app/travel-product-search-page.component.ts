@@ -1,7 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { PrototypeAccommodation, PrototypeDataRepository } from './prototype-data-repository.service';
+import { BusinessEntitySelectComponent } from './business-entity-select.component';
+import { PROTOTYPE_CONFIG } from './prototype-config';
+import { CURRENT_USER_BUSINESS_ENTITY, PrototypeAccommodation, PrototypeDataRepository } from './prototype-data-repository.service';
 import { WindowManagerService } from './window-manager.service';
 
 type ProductSearchTab =
@@ -29,7 +31,7 @@ const TABS: { id: ProductSearchTab; label: string }[] = [
 
 @Component({
   selector: 'app-travel-product-search-page',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, BusinessEntitySelectComponent],
   template: `
     <div class="tps">
       <nav class="tps__tabs">
@@ -137,6 +139,14 @@ const TABS: { id: ProductSearchTab; label: string }[] = [
             <span>Category</span>
             <select class="lmx-select"><option>Please select</option></select>
           </label>
+
+          <div class="tps__field" *ngIf="enableBusinessEntities">
+            <span>Business entities</span>
+            <app-business-entity-select
+              [selected]="selectedBusinessEntities()"
+              (selectedChange)="selectedBusinessEntities.set($event)"
+            />
+          </div>
 
           <div class="tps__radios">
             <label class="tps__radio">
@@ -502,21 +512,32 @@ export class TravelProductSearchPageComponent {
   protected alternativeTour = '';
 
   protected readonly fallsUnderAll = signal(true);
-  protected readonly appliedFilters = signal({ name: '', destination: '' });
+  protected readonly enableBusinessEntities = PROTOTYPE_CONFIG.enableBusinessEntities;
+  protected readonly selectedBusinessEntities = signal<string[]>([CURRENT_USER_BUSINESS_ENTITY]);
+  protected readonly appliedFilters = signal({
+    name: '',
+    destination: '',
+    businessEntities: [CURRENT_USER_BUSINESS_ENTITY] as string[]
+  });
 
   protected readonly results = computed(() => {
-    const { name, destination } = this.appliedFilters();
+    const { name, destination, businessEntities } = this.appliedFilters();
     return this.repository.accommodations().filter((row) => {
       const matchesName = !name || row.name.toLowerCase().includes(name);
       const matchesDestination = !destination || row.destination.toLowerCase().includes(destination);
-      return matchesName && matchesDestination;
+      const matchesBusinessEntity =
+        !this.enableBusinessEntities ||
+        businessEntities.length === 0 ||
+        (row.businessEntities ?? []).some((entity) => businessEntities.includes(entity));
+      return matchesName && matchesDestination && matchesBusinessEntity;
     });
   });
 
   protected search(): void {
     this.appliedFilters.set({
       name: this.nameInput.trim().toLowerCase(),
-      destination: this.destinationInput.trim().toLowerCase()
+      destination: this.destinationInput.trim().toLowerCase(),
+      businessEntities: this.selectedBusinessEntities()
     });
   }
 
