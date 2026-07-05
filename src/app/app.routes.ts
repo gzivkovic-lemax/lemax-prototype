@@ -7,6 +7,7 @@ import { OperationsReportPageComponent } from './operations-report-page.componen
 import { PassengersPageComponent } from './passengers-page.component';
 import { PlaceholderPageComponent } from './placeholder-page.component';
 import { ReservationsPageComponent } from './reservations-page.component';
+import { TravelProductSearchPageComponent } from './travel-product-search-page.component';
 
 export const routes: Routes = [
   {
@@ -15,6 +16,7 @@ export const routes: Routes = [
     children: [
       { path: '', pathMatch: 'full', redirectTo: 'reservations/all' },
       { path: 'reservations', pathMatch: 'full', redirectTo: 'reservations/all' },
+      { path: 'reservations/new', component: TravelProductSearchPageComponent },
       { path: 'reservations/:statusKey', component: ReservationsPageComponent },
       { path: 'operations', component: OperationsReportPageComponent },
       { path: 'documents', component: OffersPageComponent },

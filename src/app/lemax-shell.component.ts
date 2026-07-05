@@ -103,6 +103,14 @@ import { WindowLayerComponent } from './window-layer.component';
         (mouseleave)="reservationsOpen.set(false)"
       >
         <a
+          routerLink="/reservations/new"
+          routerLinkActive="active"
+          class="shell__menu-item"
+          role="menuitem"
+          (click)="reservationsOpen.set(false)"
+        >New reservation</a>
+        <div class="shell__menu-separator" aria-hidden="true"></div>
+        <a
           *ngFor="let status of reservationStatuses()"
           [routerLink]="['/reservations', status.id]"
           routerLinkActive="active"
