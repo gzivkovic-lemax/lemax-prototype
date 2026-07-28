@@ -45,7 +45,25 @@ import { WindowLayerComponent } from './window-layer.component';
           <a routerLink="/operations" routerLinkActive="active">Operations</a>
           <a routerLink="/documents" routerLinkActive="active">Documents</a>
           <a routerLink="/finances" routerLinkActive="active">Finances</a>
-          <a routerLink="/products" routerLinkActive="active">Products</a>
+
+          <div
+            class="shell__menu"
+            (mouseenter)="openProducts($event)"
+            (mouseleave)="productsOpen.set(false)"
+          >
+            <button
+              #productsTrigger
+              type="button"
+              class="shell__menu-trigger"
+              [class.active]="isProductsActive()"
+              [class.open]="productsOpen()"
+              (click)="toggleProducts($event, productsTrigger)"
+              aria-haspopup="true"
+              [attr.aria-expanded]="productsOpen()"
+            >
+              Products
+            </button>
+          </div>
 
           <div
             class="shell__menu"
@@ -167,6 +185,31 @@ import { WindowLayerComponent } from './window-layer.component';
         >Passengers</a>
       </div>
 
+      <div
+        *ngIf="productsOpen()"
+        class="shell__menu-panel"
+        role="menu"
+        [style.left.px]="productsAnchor().left"
+        [style.top.px]="productsAnchor().top"
+        (mouseenter)="productsOpen.set(true)"
+        (mouseleave)="productsOpen.set(false)"
+      >
+        <a
+          routerLink="/products/accommodation"
+          routerLinkActive="active"
+          class="shell__menu-item"
+          role="menuitem"
+          (click)="productsOpen.set(false)"
+        >Accommodation</a>
+        <a
+          routerLink="/products/groups"
+          routerLinkActive="active"
+          class="shell__menu-item"
+          role="menuitem"
+          (click)="productsOpen.set(false)"
+        >Groups</a>
+      </div>
+
       <app-window-layer />
     </div>
   `,
@@ -185,6 +228,9 @@ export class LemaxShellComponent {
   protected readonly reservationsAnchor = signal<{ left: number; top: number }>({ left: 0, top: 56 });
   protected readonly reservationStatuses = this.statusRepository.statuses;
 
+  protected readonly productsOpen = signal(false);
+  protected readonly productsAnchor = signal<{ left: number; top: number }>({ left: 0, top: 56 });
+
   protected async resetAllData(): Promise<void> {
     const ok = window.confirm(
       'Reset all prototype data?\n\nThis clears every change you have made in this browser (reservations, customers, products, page edits, open windows) and reloads the original seed data.'
@@ -199,6 +245,7 @@ export class LemaxShellComponent {
     ) as HTMLElement | null;
     if (trigger) this.partnersAnchor.set(this.computeAnchor(trigger));
     this.reservationsOpen.set(false);
+    this.productsOpen.set(false);
     this.partnersOpen.set(true);
   }
 
@@ -206,6 +253,7 @@ export class LemaxShellComponent {
     event.stopPropagation();
     this.partnersAnchor.set(this.computeAnchor(trigger));
     this.reservationsOpen.set(false);
+    this.productsOpen.set(false);
     this.partnersOpen.update((open) => !open);
   }
 
@@ -215,6 +263,7 @@ export class LemaxShellComponent {
     ) as HTMLElement | null;
     if (trigger) this.reservationsAnchor.set(this.computeAnchor(trigger));
     this.partnersOpen.set(false);
+    this.productsOpen.set(false);
     this.reservationsOpen.set(true);
   }
 
@@ -222,7 +271,30 @@ export class LemaxShellComponent {
     event.stopPropagation();
     this.reservationsAnchor.set(this.computeAnchor(trigger));
     this.partnersOpen.set(false);
+    this.productsOpen.set(false);
     this.reservationsOpen.update((open) => !open);
+  }
+
+  protected openProducts(event: MouseEvent): void {
+    const trigger = (event.currentTarget as HTMLElement)?.querySelector(
+      '.shell__menu-trigger'
+    ) as HTMLElement | null;
+    if (trigger) this.productsAnchor.set(this.computeAnchor(trigger));
+    this.partnersOpen.set(false);
+    this.reservationsOpen.set(false);
+    this.productsOpen.set(true);
+  }
+
+  protected toggleProducts(event: MouseEvent, trigger: HTMLElement): void {
+    event.stopPropagation();
+    this.productsAnchor.set(this.computeAnchor(trigger));
+    this.partnersOpen.set(false);
+    this.reservationsOpen.set(false);
+    this.productsOpen.update((open) => !open);
+  }
+
+  protected isProductsActive(): boolean {
+    return this.router.url.startsWith('/products');
   }
 
   protected isPartnersActive(): boolean {
@@ -240,10 +312,11 @@ export class LemaxShellComponent {
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent): void {
-    if (!this.partnersOpen() && !this.reservationsOpen()) return;
+    if (!this.partnersOpen() && !this.reservationsOpen() && !this.productsOpen()) return;
     if (!this.host.nativeElement.contains(event.target as Node)) {
       this.partnersOpen.set(false);
       this.reservationsOpen.set(false);
+      this.productsOpen.set(false);
     }
   }
 
@@ -252,11 +325,13 @@ export class LemaxShellComponent {
   onViewportChange(): void {
     this.partnersOpen.set(false);
     this.reservationsOpen.set(false);
+    this.productsOpen.set(false);
   }
 
   @HostListener('document:keydown.escape')
   onEscape(): void {
     this.partnersOpen.set(false);
     this.reservationsOpen.set(false);
+    this.productsOpen.set(false);
   }
 }

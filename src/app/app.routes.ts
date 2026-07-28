@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { AccommodationPageComponent } from './accommodation-page.component';
 import { CustomersPageComponent } from './customers-page.component';
+import { GroupsPageComponent } from './groups-page.component';
 import { LemaxShellComponent } from './lemax-shell.component';
 import { OffersPageComponent } from './offers-page.component';
 import { OperationsReportPageComponent } from './operations-report-page.component';
@@ -28,7 +29,9 @@ export const routes: Routes = [
           description: 'Payments, transactions, ledgers and finance reporting fit in this section.'
         }
       },
-      { path: 'products', component: AccommodationPageComponent },
+      { path: 'products', pathMatch: 'full', redirectTo: 'products/accommodation' },
+      { path: 'products/accommodation', component: AccommodationPageComponent },
+      { path: 'products/groups', component: GroupsPageComponent },
       { path: 'partners', pathMatch: 'full', redirectTo: 'partners/customers' },
       {
         path: 'partners/customers',

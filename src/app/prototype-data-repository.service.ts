@@ -165,7 +165,7 @@ export const CURRENT_USER_BUSINESS_ENTITY = 'Croatia';
 
 const STORAGE_KEY = 'lemax-prototype.prototype-pages';
 const SEED_VERSION_KEY = 'lemax-prototype.prototype-pages.seed-version';
-const SEED_VERSION = 'v8';
+const SEED_VERSION = 'v10';
 
 const ACCOMMODATIONS: PrototypeAccommodation[] = [
   { code: '8871', name: 'Hilton Parks', country: 'Europe', region: 'Austria', destination: 'Vienna', supplier: 'Hilton Hotels & Resorts, Wien, Am Stadtpark 1', department: 'Default', internalName: '', businessEntities: ['Austria'], numberOfStars: '2', serviceName: 'Bed and breakfast', capacity: 3, units: 'On request', description: 'Double room, Standard Twin Balcony, Flat screen TV, Free toiletries, Shower / Bath, Bathroom/Toilet', priceTotal: 2723.28, currency: 'GBP' },
@@ -186,6 +186,39 @@ const ACCOMMODATIONS: PrototypeAccommodation[] = [
   { code: '8696', name: 'Another hotel from chain', country: 'Chile', region: 'Santiago', destination: 'Santiago', supplier: 'Activities Ltd', department: '', internalName: '', businessEntities: ['Germany'], numberOfStars: '4', serviceName: 'Room only', capacity: 2, units: 'On request', description: 'Double room, City view', priceTotal: 990.0, currency: 'GBP' },
   { code: '37', name: 'Apartment Studio Guliver', country: 'Croatia', region: 'Istria', destination: 'Pula x', supplier: 'Lemax', department: 'Default', internalName: '', businessEntities: ['Croatia', 'Austria'], serviceName: 'Self catering', capacity: 4, units: '3 available', description: 'Studio apartment, Air conditioning', priceTotal: 640.0, currency: 'EUR' },
   { code: '34', name: 'Apartment Studio Sestan', country: 'Croatia', region: 'Istria', destination: 'Pula x', supplier: 'Lemax', department: 'Default', internalName: '', businessEntities: ['Croatia'], serviceName: 'Self catering', capacity: 4, units: '2 available', description: 'Studio apartment, Balcony', priceTotal: 590.0, currency: 'EUR' }
+];
+
+const GROUP_PRODUCTS: PrototypeAccommodation[] = [
+  { code: '1681', name: 'St. Gregory the Great & Fr. Michael Hall - 2026', country: 'France', region: 'Île-de-France', destination: 'Paris', supplier: '', department: 'Default', internalName: '', type: 'Groups', businessEntities: ['Germany'] },
+  { code: '1520', name: 'St. Gregory the Great & Fr. Michael Hall', country: 'France', region: 'Île-de-France', destination: 'Paris', supplier: '', department: 'Default', internalName: '', type: 'Groups', businessEntities: ['Germany'] },
+  { code: '1493', name: 'Dalmatia Package 7 days - Aliantour demo', country: 'Croatia', region: 'North Dalmatia', destination: 'Šibenik', supplier: '', department: 'Default', internalName: '', type: 'Groups', businessEntities: ['Croatia'] },
+  { code: '1373', name: 'Austria & Switzerland Highlights', country: 'Switzerland', region: 'Zurich', destination: 'Zurich', supplier: '', department: 'Default', internalName: '', type: 'Groups', businessEntities: ['Austria'] },
+  { code: '1370', name: 'Zürich Signature 4 Days', country: 'Switzerland', region: 'Zurich', destination: 'Zurich', supplier: '', department: 'Default', internalName: '', type: 'Groups', businessEntities: ['Austria'] },
+  { code: '1343', name: 'Croatia Package 7 days (EU)', country: 'Croatia', region: 'North Dalmatia', destination: 'Šibenik', supplier: '', department: 'Default', internalName: '', type: 'Groups', businessEntities: ['Croatia'] },
+  { code: '1120', name: 'Croatia Package 7 days - DMC TEST', country: 'Croatia', region: 'North Dalmatia', destination: 'Šibenik', supplier: '', department: 'Default', internalName: '', type: 'Groups', businessEntities: ['Croatia'] },
+  { code: '1117', name: 'Croatia Package 7 days - TEMPLATE', country: 'Croatia', region: 'North Dalmatia', destination: 'Šibenik', supplier: '', department: 'Default', internalName: '', type: 'Groups', businessEntities: ['Croatia'] },
+  { code: '1114', name: 'Austria Tour 14 days', country: 'Europe', region: 'Austria', destination: 'Vienna', supplier: '', department: 'Default', internalName: '', type: 'Groups', businessEntities: ['Austria'] },
+  { code: '1103', name: 'Thailand 10 days - WW package - demo version', country: 'Thailand', region: 'Bangkok Area', destination: 'Bangkok', supplier: '', department: 'Default', internalName: '', type: 'Groups', businessEntities: ['Germany'] },
+  { code: '1094', name: 'Thailand package 10 days - WW market demo example 2', country: 'Thailand', region: 'Bangkok Area', destination: 'Bangkok', supplier: '', department: 'Default', internalName: '', type: 'Groups', businessEntities: ['Germany'] },
+  { code: '1063', name: 'Thailand Package 10 days - WW market demo example 1', country: 'Thailand', region: 'Bangkok Area', destination: 'Bangkok', supplier: '', department: 'Default', internalName: '', type: 'Groups', businessEntities: ['Germany'] },
+  { code: '1041', name: 'Thailand Package 10 days - UK Market', country: 'Thailand', region: 'Bangkok Area', destination: 'Bangkok', supplier: '', department: 'Default', internalName: '', type: 'Groups', businessEntities: ['Germany'] },
+  { code: '1022', name: 'Mirjam Vienna', country: 'Europe', region: 'Austria', destination: 'Vienna', supplier: '', department: 'Default', internalName: '', type: 'Groups', businessEntities: ['Austria'] },
+  { code: '910', name: 'Tosca 2026 - NEW', country: 'Europe', region: 'Austria', destination: 'Vienna', supplier: '', department: 'Default', internalName: '', type: 'Groups', businessEntities: ['Austria'] },
+  { code: '902', name: 'Test 1 - to delete', country: 'Switzerland', region: 'Aargau', destination: 'Aargau', supplier: '', department: 'Default', internalName: '', type: 'Groups', businessEntities: ['Austria'] },
+  { code: '656', name: 'Icelandic 7 Days', country: 'Iceland', region: 'Reykjavik', destination: 'Reykjavik', supplier: '', department: 'Default', internalName: '', type: 'Groups', businessEntities: ['Croatia'] },
+  { code: '591', name: 'Dalmatia Coastline - Demo T', country: 'Croatia', region: 'North Dalmatia', destination: 'Šibenik', supplier: '', department: 'Default', internalName: '', type: 'Groups', businessEntities: ['Croatia'] },
+  { code: '580', name: 'Croatia Coastline - 3rd', country: 'Croatia', region: 'North Dalmatia', destination: 'Šibenik', supplier: '', department: 'Default', internalName: '', type: 'Groups', businessEntities: ['Croatia'] },
+  { code: '569', name: 'Croatia Coastline - 2nd', country: 'Croatia', region: 'North Dalmatia', destination: 'Šibenik', supplier: '', department: 'Default', internalName: '', type: 'Groups', businessEntities: ['Croatia'] },
+  { code: '558', name: 'Croatia Coastline - 1st', country: 'Croatia', region: 'North Dalmatia', destination: 'Šibenik', supplier: '', department: 'Default', internalName: '', type: 'Groups', businessEntities: ['Croatia'] },
+  { code: '540', name: 'Tosca 2026 - Albatros', country: 'Europe', region: 'Austria', destination: 'Vienna', supplier: '', department: 'Default', internalName: '', type: 'Groups', businessEntities: ['Austria'] },
+  { code: '517', name: 'Tosca 2026', country: 'Europe', region: 'Austria', destination: 'Vienna', supplier: '', department: 'Default', internalName: '', type: 'Groups', businessEntities: ['Austria'] },
+  { code: '433', name: 'Tosca - Opera in the quarry TEMPLATE', country: 'Europe', region: 'Austria', destination: 'Vienna', supplier: '', department: 'Default', internalName: '', type: 'Groups', businessEntities: ['Austria'] },
+  { code: '345', name: 'Croatia coastline - DEMO package', country: 'Croatia', region: 'North Dalmatia', destination: 'Šibenik', supplier: '', department: 'Default', internalName: '', type: 'Groups', businessEntities: ['Croatia'] },
+  { code: '298', name: 'Croatia Package 7 days - UK Market', country: 'Croatia', region: 'North Dalmatia', destination: 'Šibenik', supplier: '', department: 'Default', internalName: '', type: 'Groups', businessEntities: ['Croatia'] },
+  { code: '276', name: 'New Year on The Baltic Sea - Stockholm - Helsinki', country: 'Sweden', region: 'Stockholm', destination: 'Stockholm', supplier: '', department: 'Default', internalName: '', type: 'Groups', businessEntities: ['Germany'] },
+  { code: '215', name: 'Best of Dalmatia Tour | Package 7 days', country: 'Croatia', region: 'North Dalmatia', destination: 'Šibenik', supplier: '', department: 'Default', internalName: '', type: 'Groups', businessEntities: ['Croatia'] },
+  { code: '77', name: 'Best of Dalmatia | 7 days', country: 'Croatia', region: 'North Dalmatia', destination: 'Šibenik', supplier: '', department: 'Default', internalName: '', type: 'Groups', businessEntities: ['Croatia'] },
+  { code: '59', name: 'Best of Dalmatia | 7 days DMC', country: 'Croatia', region: 'North Dalmatia', destination: 'Šibenik', supplier: '', department: 'Default', internalName: '', type: 'Groups', businessEntities: ['Croatia'] }
 ];
 
 export const CONTRACT_TYPES = ['FIT', 'Group', 'Allotment'];
@@ -286,7 +319,7 @@ const SEED: PrototypeData = {
     { docNo: '12/2026', resNo: '9917', tone: 'confirmed', customer: 'Johnson Adam', date: '15/01/2026', branchOffice: 'Online booking (B2C)', createdBy: 'Johnson Roy', vatType: 'On margin', amount: '2,808.92 EUR' },
     { docNo: '15/2026', resNo: '9924', tone: 'confirmed', customer: 'Johnson Roy', date: '15/01/2026', branchOffice: 'Online booking (B2C)', createdBy: 'Johnson Roy', vatType: 'On margin', amount: '1,128.50 GBP' }
   ],
-  accommodations: ACCOMMODATIONS,
+  accommodations: [...ACCOMMODATIONS, ...GROUP_PRODUCTS],
   contracts: CONTRACTS,
   operations: (() => {
     const hotelRows: PrototypeOperation[] = Array.from({ length: 10 }, (_, index) => ({
@@ -341,7 +374,8 @@ export class PrototypeDataRepository {
   readonly customers = computed(() => this.state().customers);
   readonly passengers = computed(() => this.state().passengers);
   readonly offers = computed(() => this.state().offers);
-  readonly accommodations = computed(() => this.state().accommodations);
+  readonly accommodations = computed(() => this.state().accommodations.filter((row) => row.type !== 'Groups'));
+  readonly groupProducts = computed(() => this.state().accommodations.filter((row) => row.type === 'Groups'));
   readonly contracts = computed(() => this.state().contracts);
   readonly operations = computed(() => this.state().operations);
 

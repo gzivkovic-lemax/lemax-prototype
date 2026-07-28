@@ -19,8 +19,8 @@ The reference UI being mimicked is the iTravel / Lemax admin (`presentationdemo.
 
 | File | Role |
 | --- | --- |
-| `lemax-shell.component.*` | Topbar (logo, primary nav, **Reset all data**, search, user avatar) + `<router-outlet>` + window layer. |
-| `app.routes.ts` | All top-level routes — Reservations, Operations, Documents, Finances, Products, Partners, Reports, Options. |
+| `lemax-shell.component.*` | Topbar (logo, primary nav, **Reset all data**, search, user avatar) + `<router-outlet>` + window layer. Reservations, Products and Partners are hover/click dropdown menus (`shell__menu` trigger + `shell__menu-panel`, one `open`/`anchor` signal pair per menu, all mutually exclusive and closed together on document click / resize / scroll / Escape). |
+| `app.routes.ts` | All top-level routes — Reservations, Operations, Documents, Finances, Products (children: `products/accommodation`, `products/groups`), Partners, Reports, Options. |
 | `app.config.ts` | Bootstraps `provideHttpClient`, `provideRouter`, and runs `AppDataInitializerService.initialize()` via `APP_INITIALIZER`. |
 | `app-data-initializer.service.ts` | Seeds reservation/customer/product/status/filter data from `public/*.json` on first load (controlled by `SEED_DATA_VERSION`). |
 | `app-data-reset.service.ts` | Wipes every prototype-owned localStorage key, re-runs the seed, and refreshes every repo. Wired to the **Reset all data** button. |
@@ -28,14 +28,16 @@ The reference UI being mimicked is the iTravel / Lemax admin (`presentationdemo.
 | `prototype-config.ts` | Static feature-toggle config for tweaking prototype behavior (e.g. `enableBusinessEntities`). Plain exported constant, edited by hand — not persisted, not affected by **Reset all data**. |
 | `reservation-repository.service.ts` | Reservations: load, save, **duplicate**, refresh. |
 | `customer-repository.service.ts`, `product-repository.service.ts`, `reservation-status-repository.service.ts`, `filter-options-repository.service.ts` | Read-only repos for their respective entities. Each exposes `refresh()` for the reset flow. |
-| `prototype-data-repository.service.ts` | Single localStorage-backed store for the **prototype-only** list pages: Customers (Partners), Offers (Documents), Accommodation (Products), Operations report. Holds an in-memory seed; lists are exposed as `computed()` signals. |
-| `window-manager.service.ts` | Floating-window stack (open / focus / close / move / restore). Reservation windows open at ~95% of viewport. |
+| `prototype-data-repository.service.ts` | Single localStorage-backed store for the **prototype-only** list pages: Customers (Partners), Offers (Documents), Accommodation + Groups (Products), Operations report. Accommodation and Groups share one `accommodations` array in state, distinguished by `type: 'Groups'`; the repo exposes them as two separate `accommodations` / `groupProducts` `computed()` signals (filtered), and shares the same `getAccommodationByCode` / `saveAccommodation` / `createAccommodation` / `generateAccommodationCode` CRUD methods. |
+| `window-manager.service.ts` | Floating-window stack (open / focus / close / move / restore). Windows for `reservation`, `prototype-customer`, `prototype-passenger`, `prototype-accommodation`, `prototype-group`, `prototype-contract` kinds open at ~95% of viewport, centered; other kinds get a small fixed size, cascaded. |
 | `window-layer.component.ts` | Renders the backdrop + every open `<app-floating-window>`. **ESC** closes the topmost window; clicking the backdrop closes it too. |
 | `floating-window.component.ts` | Draggable window chrome — blue header with title + refresh / minimize / maximize / close icons. |
 | `reservation-editor-window.component.ts` | Tabbed reservation form (General / Activity / Custom fields / …). **OK saves and closes**, **Create template** is the secondary outline button. |
+| `accommodation-editor-window.component.ts` | Tabbed Accommodation edit window (General, Contracts, Reservations, Supplier confirmations, Description, SEO, Files, Payment settings, Booking form data, Channel manager). Only General and the Contracts sub-tab are fully wired; the rest render a scaffolded placeholder. |
+| `group-editor-window.component.ts` | Tabbed Groups edit window — a trimmed sibling of `accommodation-editor-window.component.ts` (same `PrototypeAccommodation` model, `type: 'Groups'`). General tab drops Type, Supplier and the Business entities selector (a Group belongs to exactly one business entity, set implicitly, not user-picked). Tabs: General, **Subgroups** (2nd), Reservations, Description, SEO, Files, Payment settings, Booking form data — no Contracts / Supplier confirmations / Channel manager. |
 | `customer-detail-window.component.ts`, `product-detail-window.component.ts` | Read-only detail panes shown inside a floating window. |
 | `reservations-page.component.*` | Main reservations grid: filters, table, status badges, row actions (edit / delete / **copy** / more). The **reservation-number badge** is itself the click target for opening the editor. |
-| `customers-page.component.ts`, `offers-page.component.ts`, `accommodation-page.component.ts`, `operations-report-page.component.ts` | Prototype list pages. They render rows from `PrototypeDataRepository`. |
+| `customers-page.component.ts`, `offers-page.component.ts`, `accommodation-page.component.ts`, `groups-page.component.ts`, `operations-report-page.component.ts` | Prototype list pages. They render rows from `PrototypeDataRepository`. |
 | `placeholder-page.component.ts` | Generic stand-in for not-yet-built modules (Finances, Reports, Options). |
 | `status-badge.component.ts` | Small rectangular status chip — `inquiry` / `option` / `confirmed` / `finished` / `cancelled`. Optional Material Icons icon (e.g. `check_circle`, `schedule`). |
 
@@ -74,6 +76,10 @@ If a new screen needs another colored button, pick from `--action` / `--action-o
 2. Create `<feature>-page.component.ts` that injects `PrototypeDataRepository` and reads the signal.
 3. Use the shared `.lmx-list-page` / `.lmx-filter-card` / `.lmx-data-grid` styles; only add component-scoped CSS for layout that's specific to that page.
 4. Wire the route in `app.routes.ts` and add a `<a routerLink>` in `lemax-shell.component.ts` if it's a new top-level module.
+
+### Adding a top-level nav dropdown
+
+When a top-level nav item needs sub-items (like Reservations, Partners, Products), clone the existing `shell__menu` pattern in `lemax-shell.component.ts` rather than inventing a new one: a `shell__menu` wrapper div with `(mouseenter)`/`(mouseleave)`, a `shell__menu-trigger` button with its own `open`/`anchor` signals and `open<Name>()` / `toggle<Name>()` / `is<Name>Active()` methods, and a sibling `shell__menu-panel` with `<a routerLink>` items. Wire the new `open` signal into the existing `onDocumentClick` / `onViewportChange` / `onEscape` handlers and into every other menu's open/toggle method (so opening one closes the rest).
 
 ### Adding a real entity (with edit/save flows)
 

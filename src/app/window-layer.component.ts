@@ -4,6 +4,7 @@ import { AccommodationEditorWindowComponent } from './accommodation-editor-windo
 import { ContractEditorWindowComponent } from './contract-editor-window.component';
 import { CustomerDetailWindowComponent } from './customer-detail-window.component';
 import { CustomerEditorWindowComponent } from './customer-editor-window.component';
+import { GroupEditorWindowComponent } from './group-editor-window.component';
 import { PassengerEditorWindowComponent } from './passenger-editor-window.component';
 import { ProductDetailWindowComponent } from './product-detail-window.component';
 import { ReservationEditorWindowComponent } from './reservation-editor-window.component';
@@ -21,7 +22,8 @@ import { FloatingWindowComponent } from './floating-window.component';
     CustomerEditorWindowComponent,
     PassengerEditorWindowComponent,
     AccommodationEditorWindowComponent,
-    ContractEditorWindowComponent
+    ContractEditorWindowComponent,
+    GroupEditorWindowComponent
   ],
   template: `
     <ng-container *ngIf="hasWindows()">
@@ -65,6 +67,12 @@ import { FloatingWindowComponent } from './floating-window.component';
           <app-contract-editor-window
             *ngIf="windowState.kind === 'prototype-contract'"
             [entityId]="windowState.entityId"
+            [windowId]="windowState.windowId"
+          />
+
+          <app-group-editor-window
+            *ngIf="windowState.kind === 'prototype-group'"
+            [groupCode]="windowState.entityId"
             [windowId]="windowState.windowId"
           />
         </app-floating-window>

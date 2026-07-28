@@ -47,7 +47,8 @@ export class WindowManagerService {
         kind === 'prototype-customer' ||
         kind === 'prototype-passenger' ||
         kind === 'prototype-accommodation' ||
-        kind === 'prototype-contract'
+        kind === 'prototype-contract' ||
+        kind === 'prototype-group'
           ? {
               x: Math.max(16, Math.round((viewportWidth - size.width) / 2)),
               y: Math.max(16, Math.round((viewportHeight - size.height) / 2))
@@ -131,7 +132,8 @@ export class WindowManagerService {
       kind !== 'prototype-customer' &&
       kind !== 'prototype-passenger' &&
       kind !== 'prototype-accommodation' &&
-      kind !== 'prototype-contract'
+      kind !== 'prototype-contract' &&
+      kind !== 'prototype-group'
     ) {
       return { width: 520, height: 440 };
     }
@@ -165,7 +167,8 @@ export class WindowManagerService {
       windowState.kind !== 'prototype-customer' &&
       windowState.kind !== 'prototype-passenger' &&
       windowState.kind !== 'prototype-accommodation' &&
-      windowState.kind !== 'prototype-contract'
+      windowState.kind !== 'prototype-contract' &&
+      windowState.kind !== 'prototype-group'
     ) {
       return windowState.size;
     }
@@ -197,7 +200,7 @@ export class WindowManagerService {
       return entityId === 'new' || Boolean(this.prototypeData.getPassengerByCode(entityId));
     }
 
-    if (kind === 'prototype-accommodation') {
+    if (kind === 'prototype-accommodation' || kind === 'prototype-group') {
       return entityId === 'new' || Boolean(this.prototypeData.getAccommodationByCode(entityId));
     }
 
