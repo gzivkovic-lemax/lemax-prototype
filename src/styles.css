@@ -493,6 +493,83 @@ textarea.lmx-input {
   white-space: nowrap;
 }
 
+.lmx-pager {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 8px 14px;
+  border-top: 1px solid var(--lemax-border-soft);
+  background: #fff;
+  color: var(--lemax-text);
+  font-size: 12px;
+  flex-wrap: wrap;
+}
+
+.lmx-pager__tool {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--lemax-blue);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.lmx-pager__tool:hover {
+  text-decoration: underline;
+}
+
+.lmx-pager__tool .material-icons {
+  font-size: 18px;
+}
+
+.lmx-pager__spacer {
+  flex: 1;
+}
+
+.lmx-pager__group {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.lmx-pager__input {
+  width: 44px;
+  height: 26px;
+  padding: 0 6px;
+  text-align: center;
+}
+
+.lmx-pager__range {
+  color: var(--lemax-muted);
+  white-space: nowrap;
+}
+
+.lmx-totals {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  gap: 28px;
+  padding: 16px 24px;
+  font-size: 12px;
+}
+
+.lmx-totals__item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.lmx-totals__label {
+  color: var(--lemax-text);
+  font-weight: 600;
+}
+
+.lmx-totals__value {
+  color: var(--lemax-text);
+}
+
 .ops-saved-filter {
   display: flex;
   align-items: end;

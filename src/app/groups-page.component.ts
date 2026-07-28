@@ -141,8 +141,7 @@ export class GroupsPageComponent {
   }
 
   protected openEditor(row: PrototypeAccommodation): void {
-    const title = row.destination ? `${row.name} (${row.destination})` : row.name;
-    this.windowManager.open('prototype-group', row.code, title, 'edit');
+    this.windowManager.open('prototype-group', row.code, `${row.name} - Active`, 'edit');
   }
 
   protected openNew(): void {

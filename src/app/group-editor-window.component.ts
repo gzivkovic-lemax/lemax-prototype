@@ -1,18 +1,30 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input, OnChanges, SimpleChanges, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { CURRENT_USER_BUSINESS_ENTITY, PrototypeAccommodation, PrototypeDataRepository } from './prototype-data-repository.service';
+import {
+  CURRENT_USER_BUSINESS_ENTITY,
+  PrototypeAccommodation,
+  PrototypeDataRepository,
+  PrototypeSubgroup
+} from './prototype-data-repository.service';
+import { toDateInputValue } from './date-utils';
 import { WindowManagerService } from './window-manager.service';
 
 type GroupEditorTab =
   | 'general'
   | 'subgroups'
+  | 'availability'
   | 'reservations'
-  | 'description'
+  | 'supplierInvoice'
   | 'seo'
-  | 'files'
+  | 'description'
+  | 'servicesUsage'
   | 'paymentSettings'
-  | 'bookingFormData';
+  | 'operationsReport'
+  | 'offer'
+  | 'files'
+  | 'cancellationPolicy'
+  | 'specialOffers';
 
 @Component({
   selector: 'app-group-editor-window',
@@ -135,7 +147,188 @@ type GroupEditorTab =
           </article>
         </ng-container>
 
-        <ng-container *ngIf="activeTab() !== 'general'">
+        <ng-container *ngIf="activeTab() === 'subgroups'">
+          <div class="acc-editor__contracts-toolbar">
+            <button type="button" class="lmx-btn lmx-btn--action" (click)="openSubgroupEditor(null)">
+              <span class="material-icons">add</span>
+              New
+            </button>
+            <button type="button" class="lmx-btn lmx-btn--action-outline">
+              <span class="material-icons">add</span>
+              Prepare for operations
+            </button>
+          </div>
+
+          <section class="lmx-card lmx-filter-card lmx-filter-card--compact">
+            <label class="lmx-field">
+              <span>Subgroup starts between</span>
+              <div class="acc-editor__date-pair">
+                <input
+                  type="date"
+                  class="lmx-input"
+                  [value]="startsFrom()"
+                  (change)="startsFrom.set($any($event.target).value)"
+                />
+                <input
+                  type="date"
+                  class="lmx-input"
+                  [value]="startsTo()"
+                  (change)="startsTo.set($any($event.target).value)"
+                />
+              </div>
+            </label>
+            <label class="lmx-field">
+              <span>Group subgroups</span>
+              <label class="lmx-checkbox">
+                <input type="checkbox" />
+              </label>
+            </label>
+            <label class="lmx-field">
+              <span>Prepared for operations</span>
+              <select
+                class="lmx-select"
+                [value]="preparedFilter()"
+                (change)="preparedFilter.set($any($event.target).value)"
+              >
+                <option value="all">All</option>
+                <option value="yes">Yes</option>
+                <option value="no">No</option>
+              </select>
+            </label>
+            <div class="lmx-filter-card__submit">
+              <button type="button" class="lmx-btn lmx-btn--blue" (click)="applySubgroupFilter()">Filter</button>
+            </div>
+          </section>
+
+          <section class="lmx-card lmx-grid-card">
+            <div class="lmx-grid-scroll">
+              <table class="lmx-data-grid">
+                <colgroup>
+                  <col style="width: 36px" />
+                  <col style="width: 140px" />
+                  <col style="width: 110px" />
+                  <col style="width: 400px" />
+                  <col style="width: 380px" />
+                  <col style="width: 90px" />
+                  <col style="width: 260px" />
+                  <col style="width: 130px" />
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th><input type="checkbox" aria-label="Select all" /></th>
+                    <th>Subgroup ID</th>
+                    <th>Code</th>
+                    <th>
+                      Subgroup name
+                      <span class="material-icons acc-editor__sort-icon">arrow_downward</span>
+                    </th>
+                    <th>Period</th>
+                    <th>Pax</th>
+                    <th>Prepared for operations</th>
+                    <th class="lmx-grid-actions-head">
+                      <button type="button" class="lmx-icon-btn lmx-icon-btn--filter" aria-label="Column filters">
+                        <span class="material-icons">filter_alt</span>
+                      </button>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let row of filteredSubgroups()" (dblclick)="openSubgroupEditor(row)">
+                    <td><input type="checkbox" [attr.aria-label]="'Select ' + row.id" (click)="$event.stopPropagation()" /></td>
+                    <td>{{ row.id }}</td>
+                    <td>{{ row.code }}</td>
+                    <td>{{ row.name }}</td>
+                    <td>{{ row.periodStart }} - {{ row.periodEnd }}</td>
+                    <td>{{ row.pax }}</td>
+                    <td>{{ row.preparedForOperations ? 'Yes' : 'No' }}</td>
+                    <td>
+                      <div class="lmx-row-actions">
+                        <button
+                          type="button"
+                          class="lmx-icon-btn"
+                          aria-label="Edit"
+                          (click)="$event.stopPropagation(); openSubgroupEditor(row)"
+                        >
+                          <span class="material-icons">edit</span>
+                        </button>
+                        <button type="button" class="lmx-icon-btn" aria-label="Delete" (click)="$event.stopPropagation()"><span class="material-icons">delete</span></button>
+                        <button type="button" class="lmx-icon-btn" aria-label="Unlink" (click)="$event.stopPropagation()"><span class="material-icons">link_off</span></button>
+                        <button type="button" class="lmx-icon-btn" aria-label="Copy" (click)="$event.stopPropagation()"><span class="material-icons">content_copy</span></button>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr *ngIf="!filteredSubgroups().length">
+                    <td colspan="8" class="acc-editor__contracts-empty">
+                      No subgroups match the current filter.
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <footer class="lmx-pager">
+              <a class="lmx-pager__tool">
+                <span class="material-icons">view_column</span>
+                Edit columns
+              </a>
+              <a class="lmx-pager__tool">
+                <span class="material-icons">save_alt</span>
+                Data export
+                <span class="material-icons">arrow_drop_down</span>
+              </a>
+              <span class="lmx-pager__spacer"></span>
+              <span class="lmx-pager__group">
+                Go to page:
+                <input class="lmx-input lmx-pager__input" type="text" value="1" />
+                of 1
+                <a class="lmx-pager__tool">Go</a>
+              </span>
+              <span class="lmx-pager__group">
+                Page size:
+                <input class="lmx-input lmx-pager__input" type="text" [value]="filteredSubgroups().length || 1" />
+                <a class="lmx-pager__tool">Change</a>
+              </span>
+              <span class="lmx-pager__range">{{ pagerRange() }}</span>
+              <button type="button" class="lmx-icon-btn" aria-label="Previous page" disabled>
+                <span class="material-icons">chevron_left</span>
+              </button>
+              <button type="button" class="lmx-icon-btn" aria-label="Next page" disabled>
+                <span class="material-icons">chevron_right</span>
+              </button>
+            </footer>
+          </section>
+
+          <section class="lmx-card lmx-totals">
+            <div class="lmx-totals__item">
+              <span class="lmx-totals__label">Total selling</span>
+              <span class="lmx-totals__value">{{ formatAmount(totals().selling) }}</span>
+            </div>
+            <div class="lmx-totals__item">
+              <span class="lmx-totals__label">Total net</span>
+              <span class="lmx-totals__value">{{ formatAmount(totals().net) }}</span>
+            </div>
+            <div class="lmx-totals__item">
+              <span class="lmx-totals__label">Profit</span>
+              <span class="lmx-totals__value">{{ formatAmount(totals().profit) }}</span>
+            </div>
+            <div class="lmx-totals__item">
+              <span class="lmx-totals__label">Paid</span>
+              <span class="lmx-totals__value">{{ formatAmount(totals().paid) }}</span>
+            </div>
+            <div class="lmx-totals__item">
+              <span class="lmx-totals__label">Remaining</span>
+              <span class="lmx-totals__value">{{ formatAmount(totals().remaining) }}</span>
+            </div>
+            <div class="lmx-totals__item">
+              <span class="lmx-totals__label">Currency</span>
+              <select class="lmx-select acc-editor__currency-select">
+                <option>EUR</option>
+              </select>
+            </div>
+          </section>
+        </ng-container>
+
+        <ng-container *ngIf="activeTab() !== 'general' && activeTab() !== 'subgroups'">
           <article class="lmx-card acc-editor__card">
             <h3 class="acc-editor__card-title">{{ tabLabel(activeTab()) }}</h3>
             <p class="acc-editor__placeholder">This section is scaffolded for the prototype.</p>
@@ -314,6 +507,38 @@ type GroupEditorTab =
       .acc-editor__spacer {
         flex: 1;
       }
+
+      .acc-editor__contracts-toolbar {
+        display: flex;
+        gap: 8px;
+      }
+
+      .acc-editor__date-pair {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 6px;
+      }
+
+      .acc-editor__date-pair .lmx-input {
+        width: 100%;
+        min-width: 0;
+      }
+
+      .acc-editor__sort-icon {
+        font-size: 14px;
+        vertical-align: middle;
+        color: var(--lemax-muted);
+      }
+
+      .acc-editor__contracts-empty {
+        padding: 24px;
+        text-align: center;
+        color: var(--lemax-muted);
+      }
+
+      .acc-editor__currency-select {
+        width: 120px;
+      }
     `
   ]
 })
@@ -331,16 +556,58 @@ export class GroupEditorWindowComponent implements OnChanges {
   protected readonly tabs: { id: GroupEditorTab; label: string }[] = [
     { id: 'general', label: 'General' },
     { id: 'subgroups', label: 'Subgroups' },
+    { id: 'availability', label: 'Availability' },
     { id: 'reservations', label: 'Reservations' },
-    { id: 'description', label: 'Description' },
+    { id: 'supplierInvoice', label: 'Supplier invoice' },
     { id: 'seo', label: 'SEO' },
-    { id: 'files', label: 'Files' },
+    { id: 'description', label: 'Description' },
+    { id: 'servicesUsage', label: 'Services usage' },
     { id: 'paymentSettings', label: 'Payment settings' },
-    { id: 'bookingFormData', label: 'Booking form data' }
+    { id: 'operationsReport', label: 'Operations report' },
+    { id: 'offer', label: 'Offer' },
+    { id: 'files', label: 'Files' },
+    { id: 'cancellationPolicy', label: 'Cancellation policy' },
+    { id: 'specialOffers', label: 'Special offers' }
   ];
 
   protected readonly destinationOptions = computed(() => this.uniqueValues((row) => row.destination));
   protected readonly departmentOptions = computed(() => this.uniqueValues((row) => row.department));
+
+  protected readonly startsFrom = signal('');
+  protected readonly startsTo = signal('');
+  protected readonly preparedFilter = signal('all');
+  private readonly appliedFilter = signal({ from: '', to: '', prepared: 'all' });
+
+  private readonly subgroupsForGroup = computed(() => {
+    const code = this.currentGroup()?.code;
+    return code ? this.prototypeData.getSubgroupsForGroup(code) : [];
+  });
+
+  protected readonly filteredSubgroups = computed(() => {
+    const { from, to, prepared } = this.appliedFilter();
+    return this.subgroupsForGroup().filter((row) => {
+      if (prepared !== 'all' && row.preparedForOperations !== (prepared === 'yes')) {
+        return false;
+      }
+      const start = toDateInputValue(row.periodStart);
+      if (from && start < from) return false;
+      if (to && start > to) return false;
+      return true;
+    });
+  });
+
+  protected readonly totals = computed(() => {
+    const rows = this.filteredSubgroups();
+    const selling = rows.reduce((sum, row) => sum + row.totalSelling, 0);
+    const net = rows.reduce((sum, row) => sum + row.totalNet, 0);
+    const paid = rows.reduce((sum, row) => sum + row.paid, 0);
+    return { selling, net, paid, profit: selling - net, remaining: selling - paid };
+  });
+
+  protected readonly pagerRange = computed(() => {
+    const count = this.filteredSubgroups().length;
+    return count ? `1-${count} of ${count}` : '0-0 of 0';
+  });
 
   protected readonly form = this.formBuilder.nonNullable.group({
     destination: '',
@@ -366,6 +633,27 @@ export class GroupEditorWindowComponent implements OnChanges {
 
   protected tabLabel(id: GroupEditorTab): string {
     return this.tabs.find((tab) => tab.id === id)?.label ?? '';
+  }
+
+  protected applySubgroupFilter(): void {
+    this.appliedFilter.set({
+      from: this.startsFrom(),
+      to: this.startsTo(),
+      prepared: this.preparedFilter()
+    });
+  }
+
+  protected formatAmount(value: number): string {
+    return `${value.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} EUR`;
+  }
+
+  protected openSubgroupEditor(subgroup: PrototypeSubgroup | null): void {
+    const groupName = this.currentGroup()?.name ?? 'New group';
+    const entityId = `${this.groupCode}:${subgroup ? subgroup.id : 'new'}`;
+    const title = subgroup
+      ? `${groupName} - ${subgroup.name} - Subgroup: (${subgroup.periodStart} - ${subgroup.periodEnd})`
+      : `${groupName} - New subgroup`;
+    this.windowManager.open('prototype-subgroup', entityId, title, 'edit');
   }
 
   protected save(): void {

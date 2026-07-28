@@ -8,6 +8,21 @@ import { STORAGE_KEYS, StorageService } from './storage.service';
 
 const BASE_Z_INDEX = 20;
 
+/** Kinds that open centered at ~95% of the viewport; everything else gets a small cascaded window. */
+const LARGE_WINDOW_KINDS: readonly LemaxWindowKind[] = [
+  'reservation',
+  'prototype-customer',
+  'prototype-passenger',
+  'prototype-accommodation',
+  'prototype-contract',
+  'prototype-group',
+  'prototype-subgroup'
+];
+
+function isLargeWindowKind(kind: LemaxWindowKind): boolean {
+  return LARGE_WINDOW_KINDS.includes(kind);
+}
+
 @Injectable({ providedIn: 'root' })
 export class WindowManagerService {
   readonly windows = signal<LemaxWindowState[]>([]);
@@ -42,13 +57,7 @@ export class WindowManagerService {
       entityId,
       title,
       mode,
-      position:
-        kind === 'reservation' ||
-        kind === 'prototype-customer' ||
-        kind === 'prototype-passenger' ||
-        kind === 'prototype-accommodation' ||
-        kind === 'prototype-contract' ||
-        kind === 'prototype-group'
+      position: isLargeWindowKind(kind)
           ? {
               x: Math.max(16, Math.round((viewportWidth - size.width) / 2)),
               y: Math.max(16, Math.round((viewportHeight - size.height) / 2))
@@ -127,14 +136,7 @@ export class WindowManagerService {
   }
 
   private computeSize(kind: LemaxWindowKind): { width: number; height: number } {
-    if (
-      kind !== 'reservation' &&
-      kind !== 'prototype-customer' &&
-      kind !== 'prototype-passenger' &&
-      kind !== 'prototype-accommodation' &&
-      kind !== 'prototype-contract' &&
-      kind !== 'prototype-group'
-    ) {
+    if (!isLargeWindowKind(kind)) {
       return { width: 520, height: 440 };
     }
 
@@ -162,14 +164,7 @@ export class WindowManagerService {
   }
 
   private resizeIfStale(windowState: LemaxWindowState): { width: number; height: number } {
-    if (
-      windowState.kind !== 'reservation' &&
-      windowState.kind !== 'prototype-customer' &&
-      windowState.kind !== 'prototype-passenger' &&
-      windowState.kind !== 'prototype-accommodation' &&
-      windowState.kind !== 'prototype-contract' &&
-      windowState.kind !== 'prototype-group'
-    ) {
+    if (!isLargeWindowKind(windowState.kind)) {
       return windowState.size;
     }
     const target = this.computeSize(windowState.kind);
@@ -209,6 +204,13 @@ export class WindowManagerService {
       return contractCode === 'new'
         ? Boolean(this.prototypeData.getAccommodationByCode(accommodationCode))
         : Boolean(this.prototypeData.getContractByCode(contractCode));
+    }
+
+    if (kind === 'prototype-subgroup') {
+      const [groupCode, subgroupId] = entityId.split(':');
+      return subgroupId === 'new'
+        ? Boolean(this.prototypeData.getAccommodationByCode(groupCode))
+        : Boolean(this.prototypeData.getSubgroupById(subgroupId));
     }
 
     return Boolean(this.customerRepository.getById(entityId));

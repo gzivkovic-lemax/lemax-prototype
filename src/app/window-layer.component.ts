@@ -8,6 +8,7 @@ import { GroupEditorWindowComponent } from './group-editor-window.component';
 import { PassengerEditorWindowComponent } from './passenger-editor-window.component';
 import { ProductDetailWindowComponent } from './product-detail-window.component';
 import { ReservationEditorWindowComponent } from './reservation-editor-window.component';
+import { SubgroupEditorWindowComponent } from './subgroup-editor-window.component';
 import { WindowManagerService } from './window-manager.service';
 import { FloatingWindowComponent } from './floating-window.component';
 
@@ -23,7 +24,8 @@ import { FloatingWindowComponent } from './floating-window.component';
     PassengerEditorWindowComponent,
     AccommodationEditorWindowComponent,
     ContractEditorWindowComponent,
-    GroupEditorWindowComponent
+    GroupEditorWindowComponent,
+    SubgroupEditorWindowComponent
   ],
   template: `
     <ng-container *ngIf="hasWindows()">
@@ -73,6 +75,12 @@ import { FloatingWindowComponent } from './floating-window.component';
           <app-group-editor-window
             *ngIf="windowState.kind === 'prototype-group'"
             [groupCode]="windowState.entityId"
+            [windowId]="windowState.windowId"
+          />
+
+          <app-subgroup-editor-window
+            *ngIf="windowState.kind === 'prototype-subgroup'"
+            [entityId]="windowState.entityId"
             [windowId]="windowState.windowId"
           />
         </app-floating-window>

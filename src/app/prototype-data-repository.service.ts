@@ -135,6 +135,22 @@ export interface PrototypeContract {
   specialOffer?: boolean;
 }
 
+export interface PrototypeSubgroup {
+  id: string;
+  groupCode: string;
+  code: string;
+  name: string;
+  periodStart: string;
+  periodEnd: string;
+  pax: number;
+  preparedForOperations: boolean;
+  status: string;
+  totalSelling: number;
+  totalNet: number;
+  paid: number;
+  currency: string;
+}
+
 export interface PrototypeOperation {
   opsNo: string;
   itemId: string;
@@ -155,8 +171,11 @@ export interface PrototypeData {
   offers: PrototypeOffer[];
   accommodations: PrototypeAccommodation[];
   contracts: PrototypeContract[];
+  subgroups: PrototypeSubgroup[];
   operations: PrototypeOperation[];
 }
+
+export const SUBGROUP_STATUSES = ['Published on web', 'Not published on web'];
 
 export const BUSINESS_ENTITIES = ['Croatia', 'Austria', 'Germany'];
 
@@ -165,7 +184,7 @@ export const CURRENT_USER_BUSINESS_ENTITY = 'Croatia';
 
 const STORAGE_KEY = 'lemax-prototype.prototype-pages';
 const SEED_VERSION_KEY = 'lemax-prototype.prototype-pages.seed-version';
-const SEED_VERSION = 'v10';
+const SEED_VERSION = 'v11';
 
 const ACCOMMODATIONS: PrototypeAccommodation[] = [
   { code: '8871', name: 'Hilton Parks', country: 'Europe', region: 'Austria', destination: 'Vienna', supplier: 'Hilton Hotels & Resorts, Wien, Am Stadtpark 1', department: 'Default', internalName: '', businessEntities: ['Austria'], numberOfStars: '2', serviceName: 'Bed and breakfast', capacity: 3, units: 'On request', description: 'Double room, Standard Twin Balcony, Flat screen TV, Free toiletries, Shower / Bath, Bathroom/Toilet', priceTotal: 2723.28, currency: 'GBP' },
@@ -264,6 +283,57 @@ const CONTRACTS: PrototypeContract[] = (() => {
   return ACCOMMODATIONS.flatMap((accommodation) => buildContractsForAccommodation(accommodation, sequenceRef));
 })();
 
+/** Subgroups of group 1681 mirror the reference Lemax screenshot exactly, money included. */
+const FEATURED_GROUP_SUBGROUPS: PrototypeSubgroup[] = [
+  { id: '1688', groupCode: '1681', code: '', name: 'August 2026', periodStart: '31/08/2026', periodEnd: '09/09/2026', pax: 0, preparedForOperations: false, status: 'Published on web', totalSelling: 0, totalNet: 0, paid: 0, currency: 'EUR' },
+  { id: '1687', groupCode: '1681', code: '', name: 'August 2026', periodStart: '24/08/2026', periodEnd: '02/09/2026', pax: 0, preparedForOperations: false, status: 'Published on web', totalSelling: 0, totalNet: 0, paid: 0, currency: 'EUR' },
+  { id: '1686', groupCode: '1681', code: '', name: 'August 2026', periodStart: '17/08/2026', periodEnd: '26/08/2026', pax: 0, preparedForOperations: false, status: 'Published on web', totalSelling: 0, totalNet: 0, paid: 0, currency: 'EUR' },
+  { id: '1685', groupCode: '1681', code: '', name: 'August 2026', periodStart: '10/08/2026', periodEnd: '19/08/2026', pax: 0, preparedForOperations: false, status: 'Published on web', totalSelling: 0, totalNet: 0, paid: 0, currency: 'EUR' },
+  { id: '1684', groupCode: '1681', code: '', name: 'August 2026', periodStart: '03/08/2026', periodEnd: '12/08/2026', pax: 0, preparedForOperations: false, status: 'Published on web', totalSelling: 0, totalNet: 0, paid: 0, currency: 'EUR' },
+  { id: '1682', groupCode: '1681', code: '', name: 'August 2026', periodStart: '01/08/2026', periodEnd: '10/08/2026', pax: 3, preparedForOperations: true, status: 'Published on web', totalSelling: 11185.0, totalNet: 4062.7, paid: 0, currency: 'EUR' }
+];
+
+const SUBGROUP_DEPARTURES = [
+  { name: 'May 2026', periodStart: '04/05/2026', periodEnd: '11/05/2026' },
+  { name: 'June 2026', periodStart: '08/06/2026', periodEnd: '15/06/2026' },
+  { name: 'September 2026', periodStart: '07/09/2026', periodEnd: '14/09/2026' }
+];
+
+function buildSubgroupsForGroup(
+  group: PrototypeAccommodation,
+  sequenceRef: { value: number }
+): PrototypeSubgroup[] {
+  return SUBGROUP_DEPARTURES.slice(0, 2).map((departure, index) => {
+    const subgroup: PrototypeSubgroup = {
+      id: String(2100 + sequenceRef.value),
+      groupCode: group.code,
+      code: '',
+      name: departure.name,
+      periodStart: departure.periodStart,
+      periodEnd: departure.periodEnd,
+      pax: index === 0 ? 2 : 0,
+      preparedForOperations: index === 0,
+      status: 'Published on web',
+      totalSelling: index === 0 ? 4320.0 : 0,
+      totalNet: index === 0 ? 2680.5 : 0,
+      paid: index === 0 ? 1200.0 : 0,
+      currency: 'EUR'
+    };
+    sequenceRef.value += 1;
+    return subgroup;
+  });
+}
+
+const SUBGROUPS: PrototypeSubgroup[] = (() => {
+  const sequenceRef = { value: 0 };
+  return [
+    ...FEATURED_GROUP_SUBGROUPS,
+    ...GROUP_PRODUCTS.filter((group) => group.code !== '1681').flatMap((group) =>
+      buildSubgroupsForGroup(group, sequenceRef)
+    )
+  ];
+})();
+
 const SEED: PrototypeData = {
   customers: [
     { code: '255', name: 'A Customer', country: 'CROATIA', city: '', address: '', zipCode: '', telephone: '', type: 'Customer', email: 'customer@customer.com', mobilePhone: '', taxType: 'Not tax payer' },
@@ -321,6 +391,7 @@ const SEED: PrototypeData = {
   ],
   accommodations: [...ACCOMMODATIONS, ...GROUP_PRODUCTS],
   contracts: CONTRACTS,
+  subgroups: SUBGROUPS,
   operations: (() => {
     const hotelRows: PrototypeOperation[] = Array.from({ length: 10 }, (_, index) => ({
       opsNo: '10141',
@@ -377,6 +448,7 @@ export class PrototypeDataRepository {
   readonly accommodations = computed(() => this.state().accommodations.filter((row) => row.type !== 'Groups'));
   readonly groupProducts = computed(() => this.state().accommodations.filter((row) => row.type === 'Groups'));
   readonly contracts = computed(() => this.state().contracts);
+  readonly subgroups = computed(() => this.state().subgroups);
   readonly operations = computed(() => this.state().operations);
 
   constructor(private readonly storage: StorageService) {
@@ -488,6 +560,37 @@ export class PrototypeDataRepository {
       return Number.isFinite(parsed) ? Math.max(max, parsed) : max;
     }, 0);
     return String(maxCode + 1);
+  }
+
+  getSubgroupsForGroup(groupCode: string): PrototypeSubgroup[] {
+    return this.state().subgroups.filter((subgroup) => subgroup.groupCode === groupCode);
+  }
+
+  getSubgroupById(id: string): PrototypeSubgroup | undefined {
+    return this.state().subgroups.find((subgroup) => subgroup.id === id);
+  }
+
+  saveSubgroup(updated: PrototypeSubgroup): void {
+    const current = this.state();
+    const subgroups = current.subgroups.map((subgroup) => (subgroup.id === updated.id ? updated : subgroup));
+    const next: PrototypeData = { ...current, subgroups };
+    this.state.set(next);
+    this.storage.set(STORAGE_KEY, next);
+  }
+
+  createSubgroup(subgroup: PrototypeSubgroup): void {
+    const current = this.state();
+    const next: PrototypeData = { ...current, subgroups: [subgroup, ...current.subgroups] };
+    this.state.set(next);
+    this.storage.set(STORAGE_KEY, next);
+  }
+
+  generateSubgroupId(): string {
+    const maxId = this.state().subgroups.reduce((max, subgroup) => {
+      const parsed = Number.parseInt(subgroup.id, 10);
+      return Number.isFinite(parsed) ? Math.max(max, parsed) : max;
+    }, 0);
+    return String(maxId + 1);
   }
 
   getPassengerByCode(code: string): PrototypePassenger | undefined {

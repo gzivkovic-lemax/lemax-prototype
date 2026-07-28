@@ -7,6 +7,7 @@ import {
   PrototypeContract,
   PrototypeDataRepository
 } from './prototype-data-repository.service';
+import { fromDateInputValue, toDateInputValue } from './date-utils';
 import { WindowManagerService } from './window-manager.service';
 
 type ContractEditorTab =
@@ -22,16 +23,6 @@ type ContractEditorTab =
   | 'supplierPaymentTerms'
   | 'focRules'
   | 'notes';
-
-function toDateInputValue(value: string): string {
-  const [day, month, year] = (value ?? '').split('/');
-  return day && month && year ? `${year}-${month}-${day}` : '';
-}
-
-function fromDateInputValue(value: string): string {
-  const [year, month, day] = (value ?? '').split('-');
-  return day && month && year ? `${day}/${month}/${year}` : '';
-}
 
 @Component({
   selector: 'app-contract-editor-window',

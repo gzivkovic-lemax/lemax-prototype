@@ -70,7 +70,8 @@ export type LemaxWindowKind =
   | 'prototype-passenger'
   | 'prototype-accommodation'
   | 'prototype-contract'
-  | 'prototype-group';
+  | 'prototype-group'
+  | 'prototype-subgroup';
 
 export interface LemaxWindowPosition {
   x: number;
