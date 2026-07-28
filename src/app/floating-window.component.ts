@@ -3,7 +3,7 @@ import { Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core
 import { LemaxWindowKind, LemaxWindowState } from './models';
 
 /** Lemax gives small settings dialogs pink chrome instead of the usual blue. */
-const PINK_CHROME_KINDS: readonly LemaxWindowKind[] = ['prototype-calculation-settings'];
+const PINK_CHROME_KINDS: readonly LemaxWindowKind[] = [];
 
 @Component({
   selector: 'app-floating-window',
