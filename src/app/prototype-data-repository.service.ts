@@ -151,6 +151,40 @@ export interface PrototypeSubgroup {
   currency: string;
 }
 
+export interface PrototypeCalculationLine {
+  occupancy?: 'SGL' | 'DBL';
+  prices: number[];
+}
+
+export interface PrototypeCalculationItem {
+  label: string;
+  currency: string;
+  lines: PrototypeCalculationLine[];
+}
+
+export interface PrototypeCalculationDay {
+  items: PrototypeCalculationItem[];
+}
+
+export interface PrototypePackagePrice {
+  occupancy: string;
+  currency: string;
+  netPricePerPerson: number[];
+  marginPercent: number[];
+  marginAmountPerPerson: number[];
+  grossPricePerPerson: number[];
+  netPrice: number[];
+  grossPrice: number[];
+}
+
+export interface PrototypeCalculation {
+  currency: string;
+  payingPax: number[];
+  focPax: number[];
+  days: PrototypeCalculationDay[];
+  packagePrices: PrototypePackagePrice[];
+}
+
 export interface PrototypeOperation {
   opsNo: string;
   itemId: string;
@@ -176,6 +210,98 @@ export interface PrototypeData {
 }
 
 export const SUBGROUP_STATUSES = ['Published on web', 'Not published on web'];
+
+const HOTEL_ITEM = 'Grand Hotel de l’Espérance (or similar), Room, Double Room';
+const MOTORCOACH_PRICES = [480, 480, 480, 580, 580, 580, 580];
+
+function hotelItem(single: number, double: number): PrototypeCalculationItem {
+  return {
+    label: HOTEL_ITEM,
+    currency: 'EUR',
+    lines: [
+      { occupancy: 'SGL', prices: Array(7).fill(single) },
+      { occupancy: 'DBL', prices: Array(7).fill(double) }
+    ]
+  };
+}
+
+/**
+ * The Calculation tab is a read-only comp: figures are transcribed from the reference Lemax
+ * screenshot rather than derived, so the sheet always matches the design PMs review against.
+ * Day dates are rendered from the subgroup's own period start, so every subgroup looks right.
+ */
+export const SUBGROUP_CALCULATION: PrototypeCalculation = {
+  currency: 'EUR',
+  payingPax: [20, 25, 30, 35, 40, 45, 50],
+  focPax: [1, 1, 1, 1, 2, 2, 2],
+  days: [
+    {
+      items: [
+        {
+          label: 'Transfer Airport, Airport Transfer - Arrival Paris CDG (per vehicle) (Paris CDG, Paris)',
+          currency: 'EUR',
+          lines: [{ prices: [340, 340, 340, 390, 390, 390, 390] }]
+        },
+        {
+          label: 'Transfer Paris, Motorcoach - France Pilgrimage Program (per day) (Paris)',
+          currency: 'EUR',
+          lines: [{ prices: MOTORCOACH_PRICES }]
+        },
+        hotelItem(74.33, 54.33)
+      ]
+    },
+    {
+      items: [
+        hotelItem(74.33, 54.33),
+        {
+          label: 'Transfer, Motorcoach - France Pilgrimage Program (per day) (Paris)',
+          currency: 'EUR',
+          lines: [{ prices: MOTORCOACH_PRICES }]
+        },
+        {
+          label: 'Mont Saint Michel - Abbey Entrance, Entrance Fee',
+          currency: 'EUR',
+          lines: [{ prices: Array(7).fill(28) }]
+        }
+      ]
+    },
+    {
+      items: [
+        hotelItem(74.33, 54.33),
+        {
+          label: 'Transfer, Motorcoach - France Pilgrimage Program (per day) (Paris)',
+          currency: 'EUR',
+          lines: [{ prices: MOTORCOACH_PRICES }]
+        }
+      ]
+    },
+    {
+      items: [hotelItem(0, 0)]
+    }
+  ],
+  packagePrices: [
+    {
+      occupancy: 'SGL',
+      currency: 'EUR',
+      netPricePerPerson: [1498.15, 1404.72, 1358.43, 1351.09, 1351.25, 1326.33, 1306.4],
+      marginPercent: [198.89, 220.39, 216.58, 189.5, 186.28, 185.85, 197.01],
+      marginAmountPerPerson: [2979.6, 3095.92, 2942.09, 2560.33, 2517.11, 2464.98, 2573.79],
+      grossPricePerPerson: [4477.75, 4500.64, 4300.53, 3911.41, 3868.36, 3791.32, 3880.19],
+      netPrice: [29963, 35118, 40753, 47288, 54050, 59685, 65320],
+      grossPrice: [89554.94, 112516.02, 129015.82, 136899.47, 154734.31, 170609.29, 194009.54]
+    },
+    {
+      occupancy: 'DBL',
+      currency: 'EUR',
+      netPricePerPerson: [1214.65, 1123.92, 1079.43, 1073.37, 1067.75, 1044.33, 1025.6],
+      marginPercent: [168.61, 167.5, 163.79, 153.72, 151.02, 149.28, 149.44],
+      marginAmountPerPerson: [2048.02, 1882.62, 1768.01, 1649.99, 1612.56, 1558.94, 1532.65],
+      grossPricePerPerson: [3262.67, 3006.53, 2847.44, 2723.36, 2680.31, 2603.28, 2558.25],
+      netPrice: [24293, 28098, 32383, 37568, 42710, 46995, 51280],
+      grossPrice: [65253.43, 75163.38, 85423.19, 95317.68, 107212.55, 117147.46, 127912.47]
+    }
+  ]
+};
 
 export const BUSINESS_ENTITIES = ['Croatia', 'Austria', 'Germany'];
 

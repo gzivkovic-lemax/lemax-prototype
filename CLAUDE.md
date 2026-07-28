@@ -25,16 +25,18 @@ The reference UI being mimicked is the iTravel / Lemax admin (`presentationdemo.
 | `app-data-initializer.service.ts` | Seeds reservation/customer/product/status/filter data from `public/*.json` on first load (controlled by `SEED_DATA_VERSION`). |
 | `app-data-reset.service.ts` | Wipes every prototype-owned localStorage key, re-runs the seed, and refreshes every repo. Wired to the **Reset all data** button. |
 | `storage.service.ts` | Minimal localStorage wrapper. `STORAGE_KEYS` enumerates the keys used by core entities. |
+| `date-utils.ts` | `toDateInputValue` / `fromDateInputValue` convert between the prototype's `DD/MM/YYYY` row format and the `YYYY-MM-DD` that `<input type="date">` needs; `addDaysToDate` shifts a `DD/MM/YYYY` string. Use these instead of re-deriving date parsing per component. |
 | `prototype-config.ts` | Static feature-toggle config for tweaking prototype behavior (e.g. `enableBusinessEntities`). Plain exported constant, edited by hand — not persisted, not affected by **Reset all data**. |
 | `reservation-repository.service.ts` | Reservations: load, save, **duplicate**, refresh. |
 | `customer-repository.service.ts`, `product-repository.service.ts`, `reservation-status-repository.service.ts`, `filter-options-repository.service.ts` | Read-only repos for their respective entities. Each exposes `refresh()` for the reset flow. |
-| `prototype-data-repository.service.ts` | Single localStorage-backed store for the **prototype-only** list pages: Customers (Partners), Offers (Documents), Accommodation + Groups (Products), Operations report. Accommodation and Groups share one `accommodations` array in state, distinguished by `type: 'Groups'`; the repo exposes them as two separate `accommodations` / `groupProducts` `computed()` signals (filtered), and shares the same `getAccommodationByCode` / `saveAccommodation` / `createAccommodation` / `generateAccommodationCode` CRUD methods. |
-| `window-manager.service.ts` | Floating-window stack (open / focus / close / move / restore). Windows for `reservation`, `prototype-customer`, `prototype-passenger`, `prototype-accommodation`, `prototype-group`, `prototype-contract` kinds open at ~95% of viewport, centered; other kinds get a small fixed size, cascaded. |
+| `prototype-data-repository.service.ts` | Single localStorage-backed store for the **prototype-only** list pages: Customers (Partners), Offers (Documents), Accommodation + Groups (Products), Operations report. Accommodation and Groups share one `accommodations` array in state, distinguished by `type: 'Groups'`; the repo exposes them as two separate `accommodations` / `groupProducts` `computed()` signals (filtered), and shares the same `getAccommodationByCode` / `saveAccommodation` / `createAccommodation` / `generateAccommodationCode` CRUD methods. Subgroups live in their own `subgroups` array keyed by `groupCode` (`getSubgroupsForGroup` / `getSubgroupById` / `saveSubgroup` / `createSubgroup` / `generateSubgroupId`). Also exports `SUBGROUP_CALCULATION` — see the Calculation-tab note below. |
+| `window-manager.service.ts` | Floating-window stack (open / focus / close / move / restore). `LARGE_WINDOW_KINDS` lists the kinds that open centered at ~95% of viewport; everything else gets a small cascaded window. **Add a new full-size window kind to that one constant** — sizing, centering and stale-size checks all read from it. |
 | `window-layer.component.ts` | Renders the backdrop + every open `<app-floating-window>`. **ESC** closes the topmost window; clicking the backdrop closes it too. |
 | `floating-window.component.ts` | Draggable window chrome — blue header with title + refresh / minimize / maximize / close icons. |
 | `reservation-editor-window.component.ts` | Tabbed reservation form (General / Activity / Custom fields / …). **OK saves and closes**, **Create template** is the secondary outline button. |
 | `accommodation-editor-window.component.ts` | Tabbed Accommodation edit window (General, Contracts, Reservations, Supplier confirmations, Description, SEO, Files, Payment settings, Booking form data, Channel manager). Only General and the Contracts sub-tab are fully wired; the rest render a scaffolded placeholder. |
-| `group-editor-window.component.ts` | Tabbed Groups edit window — a trimmed sibling of `accommodation-editor-window.component.ts` (same `PrototypeAccommodation` model, `type: 'Groups'`). General tab drops Type, Supplier and the Business entities selector (a Group belongs to exactly one business entity, set implicitly, not user-picked). Tabs: General, **Subgroups** (2nd), Reservations, Description, SEO, Files, Payment settings, Booking form data — no Contracts / Supplier confirmations / Channel manager. |
+| `group-editor-window.component.ts` | Tabbed Groups edit window — a trimmed sibling of `accommodation-editor-window.component.ts` (same `PrototypeAccommodation` model, `type: 'Groups'`). General tab drops Type, Supplier and the Business entities selector (a Group belongs to exactly one business entity, set implicitly, not user-picked). Tabs: General, **Subgroups** (2nd), Availability, Reservations, Supplier invoice, SEO, Description, Services usage, Payment settings, Operations report, Offer, Files, Cancellation policy, Special offers — no Contracts / Supplier confirmations / Channel manager. General and Subgroups are wired; the rest are placeholders. The Subgroups tab is a full grid (toolbar, working date-range + prepared-for-operations filter, row actions, pager, totals footer) that opens `prototype-subgroup` windows. |
+| `subgroup-editor-window.component.ts` | Tabbed Subgroup edit window (child of a Group; entity id is `` `${groupCode}:${subgroupId}` `` or `:new`, same convention as `prototype-contract`). Tabs: General, Partners, **Calculation**, Reservations, Travel segments, Operations report, Availability, Description, Payments, Refunds, Documents, Services usage. General and Calculation are wired; the rest are placeholders. |
 | `customer-detail-window.component.ts`, `product-detail-window.component.ts` | Read-only detail panes shown inside a floating window. |
 | `reservations-page.component.*` | Main reservations grid: filters, table, status badges, row actions (edit / delete / **copy** / more). The **reservation-number badge** is itself the click target for opening the editor. |
 | `customers-page.component.ts`, `offers-page.component.ts`, `accommodation-page.component.ts`, `groups-page.component.ts`, `operations-report-page.component.ts` | Prototype list pages. They render rows from `PrototypeDataRepository`. |
@@ -51,7 +53,7 @@ Defined in `src/styles.css` as CSS custom properties. **Use the variables, not r
 - Grid header tint: `--lemax-header-row` `#eaf5fb`. Row hover: `--lemax-row-hover`.
 - Status palette: `--status-confirmed-*`, `--status-option-*`, `--status-inquiry-*`, `--status-finished-*`, `--status-cancelled-*`.
 
-Shared utility classes also live in `src/styles.css`: `.lmx-btn` (`--blue` / `--action` / `--action-outline` / `--ghost`), `.lmx-input`, `.lmx-select`, `.lmx-card`, `.lmx-icon-btn`, `.lmx-page-title`, `.lmx-checkbox`. There is also a shared list-page rule set: `.lmx-list-page`, `.lmx-filter-card`, `.lmx-grid-card`, `.lmx-data-grid`, `.lmx-row-actions`. **Reuse these** before adding new ones.
+Shared utility classes also live in `src/styles.css`: `.lmx-btn` (`--blue` / `--action` / `--action-outline` / `--ghost`), `.lmx-input`, `.lmx-select`, `.lmx-card`, `.lmx-icon-btn`, `.lmx-page-title`, `.lmx-checkbox`. There is also a shared list-page rule set: `.lmx-list-page`, `.lmx-filter-card`, `.lmx-grid-card`, `.lmx-data-grid`, `.lmx-row-actions`, plus `.lmx-pager` (grid footer: Edit columns / Data export / page controls) and `.lmx-totals` (right-aligned label-over-value summary strip). **Reuse these** before adding new ones.
 
 Font: Inter. Material Icons are loaded from Google Fonts in `src/index.html` and used via `<span class="material-icons">{name}</span>`.
 
@@ -80,6 +82,23 @@ If a new screen needs another colored button, pick from `--action` / `--action-o
 ### Adding a top-level nav dropdown
 
 When a top-level nav item needs sub-items (like Reservations, Partners, Products), clone the existing `shell__menu` pattern in `lemax-shell.component.ts` rather than inventing a new one: a `shell__menu` wrapper div with `(mouseenter)`/`(mouseleave)`, a `shell__menu-trigger` button with its own `open`/`anchor` signals and `open<Name>()` / `toggle<Name>()` / `is<Name>Active()` methods, and a sibling `shell__menu-panel` with `<a routerLink>` items. Wire the new `open` signal into the existing `onDocumentClick` / `onViewportChange` / `onEscape` handlers and into every other menu's open/toggle method (so opening one closes the rest).
+
+### Adding a child entity under an edit window (contracts, subgroups)
+
+Contracts (under Accommodation) and Subgroups (under Groups) are the two worked examples. Both follow the same shape — copy it rather than inventing a new one:
+
+1. Add the row interface + seed array to `PrototypeDataRepository`, with a foreign-key field back to the parent (`accommodationCode`, `groupCode`), plus `getXForParent` / `getXById` / `saveX` / `createX` / `generateXId`. Bump `SEED_VERSION`.
+2. Add the window kind to `LemaxWindowKind`, render it in `window-layer.component.ts`, and add it to `LARGE_WINDOW_KINDS` + `entityExists()` in `window-manager.service.ts`.
+3. Use a composite entity id — `` `${parentCode}:${childId}` `` for an existing child, `` `${parentCode}:new` `` for a new one — and split it in the child window's `loadX()`. This is how the child knows its parent when created from scratch.
+4. Render the child list as a tab inside the parent's editor (grid + `.lmx-pager` + row actions), with **New** opening the child window in `new` mode.
+
+### Read-only comp screens (the Calculation tab)
+
+`SUBGROUP_CALCULATION` in `PrototypeDataRepository` holds the whole Calculation sheet — pax breaks, itinerary items and the Package price totals — as **transcribed screenshot figures, not derived values**. Some relationships do hold (`net price = net price per person × paying pax`; `gross price per person = net + margin amount`), but the totals as a whole don't reproduce exactly from the rounded numbers on screen because real Lemax computes them from unrounded internals. **Don't "fix" these numbers or wire up Recalculate** — recomputing them would drift away from the design PMs review against. If a figure needs to change, edit the constant.
+
+Day dates in the itinerary are rendered as `addDaysToDate(subgroup.periodStart, dayIndex)`, so the same seeded sheet reads correctly under every subgroup.
+
+When a screen like this needs the pax-break columns to line up across header, item and total rows, give every row the same fixed `grid-template-columns` (see `.calc__row`) — separate grids per row will not share column widths.
 
 ### Adding a real entity (with edit/save flows)
 
@@ -131,6 +150,8 @@ These are prototype-only conveniences. Don't claim parity with production behavi
 npm start          # ng serve, http://localhost:4200
 npm run build      # production build into dist/
 ```
+
+`npm run build` currently ends with a handful of **pre-existing** budget warnings (the initial bundle is over 500 kB; `reservation-editor-window`, `reservations-page.component.css` and `subgroup-editor-window` are over the 4 kB per-component CSS budget). They are warnings, not errors — the build succeeds. Don't take them as a signal that your change broke something; just don't add new ones without reason.
 
 ## When you're handed a PM-style task
 
