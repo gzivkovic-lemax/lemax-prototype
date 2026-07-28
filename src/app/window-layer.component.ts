@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, HostListener, computed, inject } from '@angular/core';
 import { AccommodationEditorWindowComponent } from './accommodation-editor-window.component';
+import { CalculationSettingsWindowComponent } from './calculation-settings-window.component';
 import { ContractEditorWindowComponent } from './contract-editor-window.component';
 import { CustomerDetailWindowComponent } from './customer-detail-window.component';
 import { CustomerEditorWindowComponent } from './customer-editor-window.component';
@@ -9,7 +10,7 @@ import { PassengerEditorWindowComponent } from './passenger-editor-window.compon
 import { ProductDetailWindowComponent } from './product-detail-window.component';
 import { ReservationEditorWindowComponent } from './reservation-editor-window.component';
 import { SubgroupEditorWindowComponent } from './subgroup-editor-window.component';
-import { WindowManagerService } from './window-manager.service';
+import { WindowManagerService, isModalWindowKind } from './window-manager.service';
 import { FloatingWindowComponent } from './floating-window.component';
 
 @Component({
@@ -25,7 +26,8 @@ import { FloatingWindowComponent } from './floating-window.component';
     AccommodationEditorWindowComponent,
     ContractEditorWindowComponent,
     GroupEditorWindowComponent,
-    SubgroupEditorWindowComponent
+    SubgroupEditorWindowComponent,
+    CalculationSettingsWindowComponent
   ],
   template: `
     <ng-container *ngIf="hasWindows()">
@@ -83,7 +85,19 @@ import { FloatingWindowComponent } from './floating-window.component';
             [entityId]="windowState.entityId"
             [windowId]="windowState.windowId"
           />
+
+          <app-calculation-settings-window
+            *ngIf="windowState.kind === 'prototype-calculation-settings'"
+            [windowId]="windowState.windowId"
+          />
         </app-floating-window>
+
+        <div
+          *ngIf="modalWindow() as modal"
+          class="window-dim"
+          [style.zIndex]="modal.zIndex - 1"
+          (click)="windowManager.close(modal.windowId)"
+        ></div>
       </div>
     </ng-container>
   `,
@@ -104,6 +118,13 @@ import { FloatingWindowComponent } from './floating-window.component';
         pointer-events: none;
       }
 
+      .window-dim {
+        position: fixed;
+        inset: 0;
+        background: rgba(10, 43, 69, 0.18);
+        pointer-events: auto;
+      }
+
       app-floating-window {
         pointer-events: auto;
       }
@@ -114,6 +135,14 @@ export class WindowLayerComponent {
   protected readonly windowManager = inject(WindowManagerService);
 
   protected readonly hasWindows = computed(() => this.windowManager.windows().length > 0);
+
+  /** Topmost modal dialog, if one is open — everything below it gets dimmed. */
+  protected readonly modalWindow = computed(() =>
+    this.windowManager
+      .windows()
+      .filter((windowState) => isModalWindowKind(windowState.kind))
+      .sort((left, right) => right.zIndex - left.zIndex)[0]
+  );
 
   protected trackByWindowId = (_index: number, item: { windowId: string }) => item.windowId;
 

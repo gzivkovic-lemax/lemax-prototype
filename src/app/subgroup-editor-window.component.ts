@@ -130,7 +130,7 @@ type SubgroupEditorTab =
                 <span class="material-icons">content_copy</span>
                 Copy from
               </button>
-              <button type="button" class="lmx-btn lmx-btn--action-outline">
+              <button type="button" class="lmx-btn lmx-btn--action-outline" (click)="openSettings()">
                 <span class="material-icons">edit</span>
                 Settings
               </button>
@@ -611,6 +611,10 @@ export class SubgroupEditorWindowComponent implements OnChanges {
 
   protected tabLabel(id: SubgroupEditorTab): string {
     return this.tabs.find((tab) => tab.id === id)?.label ?? '';
+  }
+
+  protected openSettings(): void {
+    this.windowManager.open('prototype-calculation-settings', 'global', 'Settings', 'edit');
   }
 
   protected visible<T>(values: T[]): T[] {

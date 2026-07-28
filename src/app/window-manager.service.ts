@@ -23,6 +23,22 @@ function isLargeWindowKind(kind: LemaxWindowKind): boolean {
   return LARGE_WINDOW_KINDS.includes(kind);
 }
 
+/** Small dialogs that still want an explicit size + centering rather than the cascaded default. */
+const FIXED_WINDOW_SIZES: Partial<Record<LemaxWindowKind, { width: number; height: number }>> = {
+  'prototype-calculation-settings': { width: 670, height: 530 }
+};
+
+function isCenteredWindowKind(kind: LemaxWindowKind): boolean {
+  return isLargeWindowKind(kind) || Boolean(FIXED_WINDOW_SIZES[kind]);
+}
+
+/** Dialogs that dim whatever is behind them, including other open windows. */
+export const MODAL_WINDOW_KINDS: readonly LemaxWindowKind[] = ['prototype-calculation-settings'];
+
+export function isModalWindowKind(kind: LemaxWindowKind): boolean {
+  return MODAL_WINDOW_KINDS.includes(kind);
+}
+
 @Injectable({ providedIn: 'root' })
 export class WindowManagerService {
   readonly windows = signal<LemaxWindowState[]>([]);
@@ -57,7 +73,7 @@ export class WindowManagerService {
       entityId,
       title,
       mode,
-      position: isLargeWindowKind(kind)
+      position: isCenteredWindowKind(kind)
           ? {
               x: Math.max(16, Math.round((viewportWidth - size.width) / 2)),
               y: Math.max(16, Math.round((viewportHeight - size.height) / 2))
@@ -67,7 +83,8 @@ export class WindowManagerService {
               y: 88 + (windowCount % 4) * 24
             },
       size,
-      zIndex: this.getNextZIndex(),
+      // Modal kinds leave a one-step gap so the dim layer can sit strictly beneath them.
+      zIndex: this.getNextZIndex() + (isModalWindowKind(kind) ? 1 : 0),
       active: true
     };
 
@@ -136,6 +153,11 @@ export class WindowManagerService {
   }
 
   private computeSize(kind: LemaxWindowKind): { width: number; height: number } {
+    const fixedSize = FIXED_WINDOW_SIZES[kind];
+    if (fixedSize) {
+      return fixedSize;
+    }
+
     if (!isLargeWindowKind(kind)) {
       return { width: 520, height: 440 };
     }
@@ -204,6 +226,10 @@ export class WindowManagerService {
       return contractCode === 'new'
         ? Boolean(this.prototypeData.getAccommodationByCode(accommodationCode))
         : Boolean(this.prototypeData.getContractByCode(contractCode));
+    }
+
+    if (kind === 'prototype-calculation-settings') {
+      return true;
     }
 
     if (kind === 'prototype-subgroup') {

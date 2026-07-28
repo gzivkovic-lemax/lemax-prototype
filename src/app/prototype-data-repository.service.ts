@@ -185,6 +185,16 @@ export interface PrototypeCalculation {
   packagePrices: PrototypePackagePrice[];
 }
 
+export interface PrototypeCalculationSettings {
+  individualPrices: string;
+  keepSellingPrice: boolean;
+  calculateGroupPriceOnReservationLevel: boolean;
+  pricingPolicy: string;
+  roomOccupancies: string[];
+  occupancyMin: string;
+  occupancyMax: string;
+}
+
 export interface PrototypeOperation {
   opsNo: string;
   itemId: string;
@@ -206,10 +216,23 @@ export interface PrototypeData {
   accommodations: PrototypeAccommodation[];
   contracts: PrototypeContract[];
   subgroups: PrototypeSubgroup[];
+  calculationSettings: PrototypeCalculationSettings;
   operations: PrototypeOperation[];
 }
 
 export const SUBGROUP_STATUSES = ['Published on web', 'Not published on web'];
+
+export const ROOM_OCCUPANCIES = ['SGL', 'DBL', 'TPL'];
+
+const CALCULATION_SETTINGS: PrototypeCalculationSettings = {
+  individualPrices: 'None',
+  keepSellingPrice: false,
+  calculateGroupPriceOnReservationLevel: false,
+  pricingPolicy: 'Apply pricing policy',
+  roomOccupancies: ['SGL', 'DBL'],
+  occupancyMin: '1',
+  occupancyMax: '2'
+};
 
 const HOTEL_ITEM = 'Grand Hotel de l’Espérance (or similar), Room, Double Room';
 const MOTORCOACH_PRICES = [480, 480, 480, 580, 580, 580, 580];
@@ -310,7 +333,7 @@ export const CURRENT_USER_BUSINESS_ENTITY = 'Croatia';
 
 const STORAGE_KEY = 'lemax-prototype.prototype-pages';
 const SEED_VERSION_KEY = 'lemax-prototype.prototype-pages.seed-version';
-const SEED_VERSION = 'v11';
+const SEED_VERSION = 'v12';
 
 const ACCOMMODATIONS: PrototypeAccommodation[] = [
   { code: '8871', name: 'Hilton Parks', country: 'Europe', region: 'Austria', destination: 'Vienna', supplier: 'Hilton Hotels & Resorts, Wien, Am Stadtpark 1', department: 'Default', internalName: '', businessEntities: ['Austria'], numberOfStars: '2', serviceName: 'Bed and breakfast', capacity: 3, units: 'On request', description: 'Double room, Standard Twin Balcony, Flat screen TV, Free toiletries, Shower / Bath, Bathroom/Toilet', priceTotal: 2723.28, currency: 'GBP' },
@@ -518,6 +541,7 @@ const SEED: PrototypeData = {
   accommodations: [...ACCOMMODATIONS, ...GROUP_PRODUCTS],
   contracts: CONTRACTS,
   subgroups: SUBGROUPS,
+  calculationSettings: CALCULATION_SETTINGS,
   operations: (() => {
     const hotelRows: PrototypeOperation[] = Array.from({ length: 10 }, (_, index) => ({
       opsNo: '10141',
@@ -717,6 +741,16 @@ export class PrototypeDataRepository {
       return Number.isFinite(parsed) ? Math.max(max, parsed) : max;
     }, 0);
     return String(maxId + 1);
+  }
+
+  getCalculationSettings(): PrototypeCalculationSettings {
+    return this.state().calculationSettings ?? CALCULATION_SETTINGS;
+  }
+
+  saveCalculationSettings(settings: PrototypeCalculationSettings): void {
+    const next: PrototypeData = { ...this.state(), calculationSettings: settings };
+    this.state.set(next);
+    this.storage.set(STORAGE_KEY, next);
   }
 
   getPassengerByCode(code: string): PrototypePassenger | undefined {

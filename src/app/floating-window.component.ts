@@ -1,6 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
-import { LemaxWindowState } from './models';
+import { LemaxWindowKind, LemaxWindowState } from './models';
+
+/** Lemax gives small settings dialogs pink chrome instead of the usual blue. */
+const PINK_CHROME_KINDS: readonly LemaxWindowKind[] = ['prototype-calculation-settings'];
 
 @Component({
   selector: 'app-floating-window',
@@ -16,7 +19,11 @@ import { LemaxWindowState } from './models';
       [style.zIndex]="window.zIndex"
       (mousedown)="focus.emit(window.windowId)"
     >
-      <header class="floating-window__header" (mousedown)="startDrag($event)">
+      <header
+        class="floating-window__header"
+        [class.floating-window__header--pink]="hasPinkChrome"
+        (mousedown)="startDrag($event)"
+      >
         <div class="floating-window__title">{{ window.title }}</div>
 
         <div class="floating-window__controls">
@@ -74,6 +81,10 @@ import { LemaxWindowState } from './models';
         flex-shrink: 0;
       }
 
+      .floating-window__header--pink {
+        background: var(--lemax-action);
+      }
+
       .floating-window__title {
         font-size: 14px;
         font-weight: 600;
@@ -117,6 +128,10 @@ import { LemaxWindowState } from './models';
         background: var(--lemax-action);
       }
 
+      .floating-window__header--pink .floating-window__icon--close:hover {
+        background: var(--lemax-action-dark);
+      }
+
       .floating-window__content {
         flex: 1;
         min-height: 0;
@@ -131,6 +146,10 @@ export class FloatingWindowComponent implements OnDestroy {
   @Output() close = new EventEmitter<string>();
   @Output() focus = new EventEmitter<string>();
   @Output() move = new EventEmitter<{ windowId: string; x: number; y: number }>();
+
+  protected get hasPinkChrome(): boolean {
+    return PINK_CHROME_KINDS.includes(this.window.kind);
+  }
 
   private dragState:
     | {

@@ -30,9 +30,10 @@ The reference UI being mimicked is the iTravel / Lemax admin (`presentationdemo.
 | `reservation-repository.service.ts` | Reservations: load, save, **duplicate**, refresh. |
 | `customer-repository.service.ts`, `product-repository.service.ts`, `reservation-status-repository.service.ts`, `filter-options-repository.service.ts` | Read-only repos for their respective entities. Each exposes `refresh()` for the reset flow. |
 | `prototype-data-repository.service.ts` | Single localStorage-backed store for the **prototype-only** list pages: Customers (Partners), Offers (Documents), Accommodation + Groups (Products), Operations report. Accommodation and Groups share one `accommodations` array in state, distinguished by `type: 'Groups'`; the repo exposes them as two separate `accommodations` / `groupProducts` `computed()` signals (filtered), and shares the same `getAccommodationByCode` / `saveAccommodation` / `createAccommodation` / `generateAccommodationCode` CRUD methods. Subgroups live in their own `subgroups` array keyed by `groupCode` (`getSubgroupsForGroup` / `getSubgroupById` / `saveSubgroup` / `createSubgroup` / `generateSubgroupId`). Also exports `SUBGROUP_CALCULATION` — see the Calculation-tab note below. |
-| `window-manager.service.ts` | Floating-window stack (open / focus / close / move / restore). `LARGE_WINDOW_KINDS` lists the kinds that open centered at ~95% of viewport; everything else gets a small cascaded window. **Add a new full-size window kind to that one constant** — sizing, centering and stale-size checks all read from it. |
-| `window-layer.component.ts` | Renders the backdrop + every open `<app-floating-window>`. **ESC** closes the topmost window; clicking the backdrop closes it too. |
-| `floating-window.component.ts` | Draggable window chrome — blue header with title + refresh / minimize / maximize / close icons. |
+| `window-manager.service.ts` | Floating-window stack (open / focus / close / move / restore). `LARGE_WINDOW_KINDS` lists the kinds that open centered at ~95% of viewport; **add a new full-size window kind to that one constant** — sizing, centering and stale-size checks all read from it. `FIXED_WINDOW_SIZES` is for small dialogs that still want an explicit size and centering (e.g. the Calculation Settings dialog); everything else gets the default 520×440 cascaded window. `MODAL_WINDOW_KINDS` marks dialogs that dim what's behind them — those open one z-index step higher than normal so `window-layer` can slot its dim layer strictly beneath. |
+| `window-layer.component.ts` | Renders the backdrop + every open `<app-floating-window>`. **ESC** closes the topmost window; clicking the backdrop closes it too. Kinds in `MODAL_WINDOW_KINDS` also get a `.window-dim` layer that greys out (and blocks clicks to) everything beneath them — including other open windows. |
+| `floating-window.component.ts` | Draggable window chrome — header with title + refresh / minimize / maximize / close icons. Blue by default; kinds listed in `PINK_CHROME_KINDS` get a pink header (Lemax styles small settings dialogs that way). |
+| `calculation-settings-window.component.ts` | The **Settings** dialog opened from the subgroup Calculation tab's toolbar — pink chrome, fixed 670×530, single General card. Reads/writes the shared `calculationSettings` via `PrototypeDataRepository`; **OK saves and closes**. |
 | `reservation-editor-window.component.ts` | Tabbed reservation form (General / Activity / Custom fields / …). **OK saves and closes**, **Create template** is the secondary outline button. |
 | `accommodation-editor-window.component.ts` | Tabbed Accommodation edit window (General, Contracts, Reservations, Supplier confirmations, Description, SEO, Files, Payment settings, Booking form data, Channel manager). Only General and the Contracts sub-tab are fully wired; the rest render a scaffolded placeholder. |
 | `group-editor-window.component.ts` | Tabbed Groups edit window — a trimmed sibling of `accommodation-editor-window.component.ts` (same `PrototypeAccommodation` model, `type: 'Groups'`). General tab drops Type, Supplier and the Business entities selector (a Group belongs to exactly one business entity, set implicitly, not user-picked). Tabs: General, **Subgroups** (2nd), Availability, Reservations, Supplier invoice, SEO, Description, Services usage, Payment settings, Operations report, Offer, Files, Cancellation policy, Special offers — no Contracts / Supplier confirmations / Channel manager. General and Subgroups are wired; the rest are placeholders. The Subgroups tab is a full grid (toolbar, working date-range + prepared-for-operations filter, row actions, pager, totals footer) that opens `prototype-subgroup` windows. |
@@ -41,6 +42,7 @@ The reference UI being mimicked is the iTravel / Lemax admin (`presentationdemo.
 | `reservations-page.component.*` | Main reservations grid: filters, table, status badges, row actions (edit / delete / **copy** / more). The **reservation-number badge** is itself the click target for opening the editor. |
 | `customers-page.component.ts`, `offers-page.component.ts`, `accommodation-page.component.ts`, `groups-page.component.ts`, `operations-report-page.component.ts` | Prototype list pages. They render rows from `PrototypeDataRepository`. |
 | `placeholder-page.component.ts` | Generic stand-in for not-yet-built modules (Finances, Reports, Options). |
+| `business-entity-select.component.ts` | Checkbox multi-select combo (trigger showing the joined selection + "Select all" panel). Despite the name it takes an `options` input, so it is **the** reusable multi-select — the Calculation Settings room-occupancy picker uses it with `ROOM_OCCUPANCIES`. Note it summarises a fully-selected set as "All". |
 | `status-badge.component.ts` | Small rectangular status chip — `inquiry` / `option` / `confirmed` / `finished` / `cancelled`. Optional Material Icons icon (e.g. `check_circle`, `schedule`). |
 
 ## Lemax design tokens
@@ -98,6 +100,8 @@ Contracts (under Accommodation) and Subgroups (under Groups) are the two worked 
 
 Day dates in the itinerary are rendered as `addDaysToDate(subgroup.periodStart, dayIndex)`, so the same seeded sheet reads correctly under every subgroup.
 
+The toolbar's **Settings** button is the one action on that toolbar that does something — it opens `calculation-settings-window.component.ts`. Those settings are stored once for the whole prototype (`calculationSettings` in `PrototypeDataRepository`), not per subgroup, and they deliberately **do not** drive the seeded sheet: adding TPL in Settings will not add a TPL package-price block. Recalculate / Copy from / New Item are mocks.
+
 When a screen like this needs the pax-break columns to line up across header, item and total rows, give every row the same fixed `grid-template-columns` (see `.calc__row`) — separate grids per row will not share column widths.
 
 ### Adding a real entity (with edit/save flows)
@@ -150,6 +154,8 @@ These are prototype-only conveniences. Don't claim parity with production behavi
 npm start          # ng serve, http://localhost:4200
 npm run build      # production build into dist/
 ```
+
+If port 4200 is already taken by another project's dev server, run `npm start -- --port 4300` (there is a matching `ng-serve-4300` entry in `.claude/launch.json`). **Check which project is on the port before trusting what you see** — a sibling checkout serving 4200 will look like this app but not reflect your edits.
 
 `npm run build` currently ends with a handful of **pre-existing** budget warnings (the initial bundle is over 500 kB; `reservation-editor-window`, `reservations-page.component.css` and `subgroup-editor-window` are over the 4 kB per-component CSS budget). They are warnings, not errors — the build succeeds. Don't take them as a signal that your change broke something; just don't add new ones without reason.
 
