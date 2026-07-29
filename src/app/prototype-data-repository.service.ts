@@ -359,7 +359,7 @@ const ACCOMMODATIONS: PrototypeAccommodation[] = [
 const GROUP_PRODUCTS: PrototypeAccommodation[] = [
   { code: '1681', name: 'St. Gregory the Great & Fr. Michael Hall - 2026', country: 'France', region: 'Île-de-France', destination: 'Paris', supplier: '', department: 'Default', internalName: '', type: 'Groups', businessEntities: ['Germany'] },
   { code: '1520', name: 'St. Gregory the Great & Fr. Michael Hall', country: 'France', region: 'Île-de-France', destination: 'Paris', supplier: '', department: 'Default', internalName: '', type: 'Groups', businessEntities: ['Germany'] },
-  { code: '1493', name: 'Dalmatia Package 7 days - Aliantour demo', country: 'Croatia', region: 'North Dalmatia', destination: 'Šibenik', supplier: '', department: 'Default', internalName: '', type: 'Groups', businessEntities: ['Croatia'] },
+  { code: '1493', name: 'Dalmatia Package 7 days - ', country: 'Croatia', region: 'North Dalmatia', destination: 'Šibenik', supplier: '', department: 'Default', internalName: '', type: 'Groups', businessEntities: ['Croatia'] },
   { code: '1373', name: 'Austria & Switzerland Highlights', country: 'Switzerland', region: 'Zurich', destination: 'Zurich', supplier: '', department: 'Default', internalName: '', type: 'Groups', businessEntities: ['Austria'] },
   { code: '1370', name: 'Zürich Signature 4 Days', country: 'Switzerland', region: 'Zurich', destination: 'Zurich', supplier: '', department: 'Default', internalName: '', type: 'Groups', businessEntities: ['Austria'] },
   { code: '1343', name: 'Croatia Package 7 days (EU)', country: 'Croatia', region: 'North Dalmatia', destination: 'Šibenik', supplier: '', department: 'Default', internalName: '', type: 'Groups', businessEntities: ['Croatia'] },
